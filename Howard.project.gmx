@@ -3,20 +3,52 @@
   <Configs name="configs">
     <Config>Configs\Default</Config>
   </Configs>
+  <datafiles number="2" name="datafiles">
+    <datafile>
+      <name>howard.ico</name>
+      <exists>-1</exists>
+      <size>38078</size>
+      <exportAction>2</exportAction>
+      <exportDir></exportDir>
+      <overwrite>0</overwrite>
+      <freeData>-1</freeData>
+      <removeEnd>0</removeEnd>
+      <store>0</store>
+      <ConfigOptions>
+        <Config name="Default">
+          <CopyToMask>9223372036854775807</CopyToMask>
+        </Config>
+      </ConfigOptions>
+      <filename>howard.ico</filename>
+    </datafile>
+  </datafiles>
   <NewExtensions/>
   <sounds name="sound">
     <sound>sound\snd_ohyeah</sound>
+    <sound>sound\snd_music</sound>
+    <sound>sound\snd_gameover</sound>
+    <sound>sound\snd_tele</sound>
+    <sound>sound\snd_tele_long</sound>
+    <sound>sound\snd_pause</sound>
+    <sound>sound\snd_unpause</sound>
+    <sound>sound\snd_aah</sound>
   </sounds>
   <sprites name="sprites">
     <sprites name="Howard">
       <sprite>sprites\sHoward_run</sprite>
       <sprite>sprites\sHoward_stand</sprite>
       <sprite>sprites\sHoward_jet</sprite>
+      <sprite>sprites\sHoward_jump_jet</sprite>
+      <sprite>sprites\sHoward_die</sprite>
       <sprite>sprites\sBig_mask</sprite>
       <sprite>sprites\sSmall_mask</sprite>
+      <sprite>sprites\sIcon</sprite>
     </sprites>
     <sprites name="Blocks">
-      <sprite>sprites\sBlock1</sprite>
+      <sprite>sprites\sBlock</sprite>
+      <sprite>sprites\sBlock2</sprite>
+      <sprite>sprites\sBlock3</sprite>
+      <sprite>sprites\sSmallBlock</sprite>
       <sprite>sprites\sBreak</sprite>
       <sprite>sprites\sPush</sprite>
       <sprite>sprites\sHplat</sprite>
@@ -26,11 +58,15 @@
       <sprite>sprites\sConveyorRight</sprite>
       <sprite>sprites\sElecFence</sprite>
       <sprite>sprites\sWater</sprite>
+      <sprite>sprites\sBigWater</sprite>
+      <sprite>sprites\sSwitchBlock</sprite>
+      <sprite>sprites\spr_ice</sprite>
     </sprites>
     <sprites name="System">
       <sprite>sprites\sName</sprite>
       <sprite>sprites\sScore</sprite>
       <sprite>sprites\sNon</sprite>
+      <sprite>sprites\sSmallNon</sprite>
       <sprites name="Touch">
         <sprite>sprites\sAnalogBack</sprite>
         <sprite>sprites\sAnalog</sprite>
@@ -38,24 +74,52 @@
         <sprite>sprites\sShieldTouch</sprite>
         <sprite>sprites\sShrinkTouch</sprite>
       </sprites>
+      <sprite>sprites\sBullet</sprite>
+      <sprite>sprites\sWhite</sprite>
+      <sprite>sprites\sTurretMask</sprite>
+      <sprite>sprites\s12Mask</sprite>
+      <sprite>sprites\s16mask</sprite>
+      <sprite>sprites\sPause</sprite>
     </sprites>
+    <sprite>sprites\sBirb</sprite>
     <sprite>sprites\sImp</sprite>
+    <sprite>sprites\sTrooper</sprite>
+    <sprite>sprites\sTrooperShoot</sprite>
     <sprite>sprites\sNPC</sprite>
     <sprite>sprites\sSmiley</sprite>
     <sprite>sprites\sShrink</sprite>
+    <sprite>sprites\sJumpJet</sprite>
     <sprite>sprites\sMcChicken</sprite>
     <sprite>sprites\sMine</sprite>
     <sprite>sprites\sExplode</sprite>
-    <sprite>sprites\sShock</sprite>
+    <sprite>sprites\sZap</sprite>
+    <sprite>sprites\sSign</sprite>
+    <sprite>sprites\sSwitch</sprite>
+    <sprite>sprites\sTurret</sprite>
+    <sprite>sprites\sTele</sprite>
+    <sprite>sprites\sLazerVert</sprite>
+    <sprite>sprites\sLazerHor</sprite>
+    <sprite>sprites\sVortex</sprite>
   </sprites>
   <backgrounds name="background">
     <background>background\bg_logo</background>
     <background>background\bg_title</background>
     <background>background\bg_gameover</background>
+    <background>background\bg_tile</background>
+    <background>background\bg_cave</background>
+    <background>background\bg_cave2</background>
+    <background>background\bg_cave3</background>
+    <background>background\bg_clouds</background>
   </backgrounds>
-  <paths name="paths"/>
+  <paths name="paths">
+    <path>paths\pBirb</path>
+    <path>paths\pBirb2</path>
+    <path>paths\pEvilHoward</path>
+  </paths>
   <scripts name="scripts">
     <script>scripts\instance_nth_nearest.gml</script>
+    <script>scripts\clamp_wrap.gml</script>
+    <script>scripts\scale_canvas.gml</script>
   </scripts>
   <fonts name="fonts">
     <font>fonts\fnt_system</font>
@@ -69,6 +133,7 @@
       <object>objects\oEnemy</object>
       <object>objects\oTarget</object>
       <object>objects\oHoward_fake</object>
+      <object>objects\oHoward_die</object>
       <object>objects\oNext</object>
       <objects name="Touch">
         <object>objects\oAnalog</object>
@@ -77,25 +142,49 @@
         <object>objects\oShieldTouch</object>
         <object>objects\oShrinkTouch</object>
       </objects>
+      <object>objects\oBullet</object>
+      <object>objects\oZap</object>
+      <object>objects\oExplode</object>
+      <object>objects\oTransportEvent</object>
+      <object>objects\oScriptedTransport</object>
+      <object>objects\oResize</object>
     </objects>
     <object>objects\oHoward</object>
     <object>objects\oSmiley</object>
     <object>objects\oImp</object>
+    <object>objects\oTrooper</object>
+    <object>objects\oBirb</object>
+    <object>objects\oEvilHoward</object>
+    <object>objects\oEvilHowardDie</object>
+    <object>objects\oMine</object>
+    <object>objects\oTurret</object>
+    <object>objects\oVortex</object>
+    <object>objects\oElecFence</object>
     <object>objects\oNPC</object>
+    <object>objects\oSign</object>
     <object>objects\oBlock</object>
+    <object>objects\oBlock2</object>
+    <object>objects\oBlock3</object>
     <object>objects\oBreak</object>
+    <object>objects\oShootAway</object>
+    <object>objects\oInvisiblock</object>
     <object>objects\oPush</object>
     <object>objects\oConveyorLeft</object>
     <object>objects\oConveyorRight</object>
     <object>objects\oHplat</object>
     <object>objects\oVplat</object>
     <object>objects\oShrink</object>
+    <object>objects\oJump</object>
     <object>objects\oMcChicken</object>
     <object>objects\oLava</object>
-    <object>objects\oElecFence</object>
-    <object>objects\oMine</object>
-    <object>objects\oExplode</object>
     <object>objects\oWater</object>
+    <object>objects\oBigWater</object>
+    <object>objects\oSwitchBlock</object>
+    <object>objects\oSwitch</object>
+    <object>objects\oIce</object>
+    <object>objects\oTele</object>
+    <object>objects\oLazerVert</object>
+    <object>objects\oLazerHor</object>
   </objects>
   <rooms name="rooms">
     <rooms name="System">
@@ -103,9 +192,20 @@
       <room>rooms\rm_title</room>
       <room>rooms\rm_gameover</room>
       <room>rooms\rm_win</room>
+      <room>rooms\rm_win2</room>
+      <room>rooms\rm_win3</room>
+      <room>rooms\rm_win4</room>
+      <room>rooms\rm_win5</room>
     </rooms>
     <room>rooms\rm_1</room>
     <room>rooms\rm_2</room>
+    <room>rooms\rm_3</room>
+    <room>rooms\rm_4</room>
+    <room>rooms\rm_5</room>
+    <room>rooms\rm_6</room>
+    <room>rooms\rm_7</room>
+    <room>rooms\rm_8</room>
+    <room>rooms\rm_boss</room>
   </rooms>
   <help>
     <rtf>help.rtf</rtf>

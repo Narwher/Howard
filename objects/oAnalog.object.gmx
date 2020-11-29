@@ -27,6 +27,8 @@
             <kind>1</kind>
             <string>/// 'Pressed' check variable
 analogPressed = false;
+
+
 </string>
           </argument>
         </arguments>
@@ -50,15 +52,14 @@ analogPressed = false;
           <argument>
             <kind>1</kind>
             <string>/// Track touch movement
-
 joystick_max_dist = 8;
 deadzone = 2;
 dist_mouse =  point_distance(oAnalogBack.x,oAnalogBack.y,device_mouse_x(0),device_mouse_y(0));
 dir = point_direction(oAnalogBack.x,oAnalogBack.y,device_mouse_x(0),device_mouse_y(0));
 
 // sync location to special view (1)
-x = view_xview[0] +  32;
-y = view_yview[0] +  90;
+x = view_xview[global.myView] +  32;
+y = view_yview[global.myView] +  90;
 
 // check if we have pressed touch analog nub exactaly
 if device_mouse_check_button_pressed(0, mb_left) &amp;&amp; collision_point(device_mouse_x(0), device_mouse_y(0), oAnalogBack, true, true)
@@ -71,19 +72,42 @@ if analogPressed &amp;&amp; device_mouse_check_button_released(0,mb_left){
 }
 
 if analogPressed 
-&amp;&amp; point_in_rectangle(mouse_x, mouse_y, view_xview[0]-10, view_yview[0], (view_xview[0] + (view_wview[0] - (view_wview[0]/3.2))), (view_yview[0] + view_hview[0])){
+&amp;&amp; point_in_rectangle(mouse_x, mouse_y, view_xview[global.myView]-10, view_yview[global.myView], (view_xview[global.myView] + (view_wview[global.myView] - (view_wview[global.myView]/3.2))), (view_yview[global.myView] + view_hview[global.myView])){
     if(dist_mouse &lt; joystick_max_dist){
         x = device_mouse_x(0);
         y = device_mouse_y(0);
     }else{
-        x = oAnalogBack.x + lengthdir_x(joystick_max_dist, dir);
-        y = oAnalogBack.y + lengthdir_y(joystick_max_dist, dir);
+        x =  oAnalogBack.x + lengthdir_x(joystick_max_dist, dir);
+        y =  oAnalogBack.y + lengthdir_y(joystick_max_dist, dir);
     }
 }
 
 if !global.touch{
     instance_destroy();
 }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="64">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>draw_sprite_ext(sAnalog,0,x,y,1,1,image_angle,image_blend,image_alpha)
 </string>
           </argument>
         </arguments>

@@ -28,6 +28,37 @@
             <string>/// Automatically progresses logo screen to title screen
 alarm[0] = 10;
 sound_play(snd_ohyeah);
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// change viewport
+if (os_type == os_android || os_type == os_ios){
+    global.myView = 1;
+    view_visible[global.myView] = true;
+    view_enabled = true;
+}else{
+    global.myView = 1;
+    view_visible[global.myView] = true;
+    view_enabled = true;
+}
 </string>
           </argument>
         </arguments>

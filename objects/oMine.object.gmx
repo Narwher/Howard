@@ -6,7 +6,7 @@
   <depth>0</depth>
   <persistent>0</persistent>
   <parentName>oEnemy</parentName>
-  <maskName>&lt;undefined&gt;</maskName>
+  <maskName>s12Mask</maskName>
   <events>
     <event eventtype="0" enumb="0">
       <action>
@@ -82,6 +82,32 @@ exploded = false; // mine has not been triggered
         <arguments>
           <argument>
             <kind>1</kind>
+            <string>/// shtuff
+if global.gameMove{
+    image_speed = 0.10;
+}else{
+    image_speed = 0;
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
             <string>/// Dai
 if hp &lt;= 0 {
    exploded = true;
@@ -107,12 +133,16 @@ if hp &lt;= 0 {
           <argument>
             <kind>1</kind>
             <string>/// Gravity
-if bbox_right &gt; view_xview
-&amp;&amp; bbox_left &lt; view_xview + view_wview
-&amp;&amp; bbox_bottom &gt; view_yview
-&amp;&amp; bbox_top &lt; view_yview + view_hview{
-    if place_empty(x,y + 2){
-        y += 2;
+if global.gameMove{
+    if bbox_right &gt; view_xview[global.myView]
+    &amp;&amp; bbox_left &lt; view_xview[global.myView] + view_wview[global.myView]
+    &amp;&amp; bbox_bottom &gt; view_yview[global.myView]
+    &amp;&amp; bbox_top &lt; view_yview[global.myView] + view_hview[global.myView]{
+        if place_empty(x,y + 2){
+            y += 2;
+        }else{
+            y = yprevious;
+        }
     }else{
         y = yprevious;
     }
@@ -141,12 +171,18 @@ if bbox_right &gt; view_xview
           <argument>
             <kind>1</kind>
             <string>/// Collide with conveyor
-if place_meeting(x, y + 1, oConveyorRight) &amp;&amp; place_empty(x + 1,y){
-    hspeed = 1;
-}else if place_meeting(x, y + 1, oConveyorLeft) &amp;&amp; place_empty(x - 1,y){
-    hspeed = -1;
+if global.gameMove{
+    if place_meeting(x, y + 1, oConveyorRight) &amp;&amp; place_empty(x + 1,y){
+        hspeed = 1;
+    }else if place_meeting(x, y + 1, oConveyorLeft) &amp;&amp; place_empty(x - 1,y){
+        hspeed = -1;
+    }else{
+        hspeed = 0;
+    }
 }else{
     hspeed = 0;
+    x = xprevious
+    y = yprevious;
 }
 </string>
           </argument>
@@ -169,14 +205,16 @@ if place_meeting(x, y + 1, oConveyorRight) &amp;&amp; place_empty(x + 1,y){
           <argument>
             <kind>1</kind>
             <string>/// Explode when touched
-if place_meeting(x,y,oHoward) &amp;&amp; !exploded{
-    if !oHoward.shieldOn{
-        global.hp = global.hp - damage;
-   }else{
-      global.shp = global.shp - damage;
-      global.hp = global.hp - 0.20;
-   }
-    exploded = true;
+if global.gameMove{
+    if place_meeting(x,y,oHoward) &amp;&amp; !exploded{
+        if !oHoward.shieldOn{
+            global.hp = global.hp - damage;
+       }else{
+          global.shp = global.shp - damage;
+          global.hp = global.hp - 0.20;
+       }
+        exploded = true;
+    }
 }
 </string>
           </argument>
@@ -201,6 +239,33 @@ if place_meeting(x,y,oHoward) &amp;&amp; !exploded{
             <string>/// Explode self
 if exploded{
     alarm[0] = 1;
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>draw_sprite_ext(sMine,image_index,x,y,1,1,image_angle,image_blend,image_alpha);
+
+if global.debug{
+    draw_sprite_ext(mask_index,0,x,y,1,1,0,c_aqua,0.5);
 }
 </string>
           </argument>

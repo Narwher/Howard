@@ -8,38 +8,6 @@
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
   <events>
-    <event eventtype="3" enumb="0">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/// Resize screen to fit if on mobile
-if (os_type == os_android) || (os_type == os_ios){
-    view_wport[0] = 540;
-    view_hport[0] = 272;
-    surface_resize(application_surface, view_wport[0],view_hport[0]);
-}else{
-    view_wport[0] = 960;
-    view_hport[0] = 544;
-    surface_resize(application_surface, view_wport[0],view_hport[0]);
-}
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
     <event eventtype="8" enumb="0">
       <action>
         <libid>1</libid>
@@ -78,10 +46,9 @@ if (os_type == os_android) || (os_type == os_ios){
           <argument>
             <kind>1</kind>
             <string>/// Draw textbox
-draw_rectangle(view_xview[0],view_yview[0]+116, view_xview[0]+240, view_yview[0]+136,false)
+draw_rectangle(view_xview[global.myView],view_yview[global.myView]+116, view_xview[global.myView]+240, view_yview[global.myView]+136,false)
 
-//draw_set_color(c_gray)
-//draw_rectangle(view_xview[0]-1,view_yview[0]+97, view_xview[0]+179, view_yview[0]+119,true)
+
 </string>
           </argument>
         </arguments>
@@ -123,14 +90,26 @@ draw_rectangle(view_xview[0],view_yview[0]+116, view_xview[0]+240, view_yview[0]
           <argument>
             <kind>1</kind>
             <string>/// Draw name, health and score
-draw_sprite_ext(sName,0,view_xview[0]+4,view_yview[0]+115,2,2,image_angle,oHoward.image_blend,image_alpha)
-draw_healthbar(view_xview[0]+70,view_yview[0]+120, view_xview[0]+235, view_yview[0]+132, global.hp,c_black, c_red, c_lime, 0, true, true)
-
-//draw shield bar when applicable
-if oHoward.shieldOn{
-    draw_healthbar(oHoward.x-8,oHoward.playerHeight-14, oHoward.x+8, oHoward.playerHeight-10, global.shp,c_black, c_red, c_lime, 0, true, true)
+if global.gameMove{
+    draw_sprite_ext(sName,0,view_xview[global.myView]+4,view_yview[global.myView]+115,2,2,image_angle,oHoward.image_blend,image_alpha)
+    draw_healthbar(view_xview[global.myView]+70,view_yview[global.myView]+120, view_xview[global.myView]+235, view_yview[global.myView]+132, global.hp,c_black, c_red, c_lime, 0, true, true)
+    
+    //draw shield bar when applicable
+    if oHoward.shieldOn{
+        draw_healthbar(oHoward.x-8,oHoward.playerHeight-14, oHoward.x+8, oHoward.playerHeight-10, global.shp,c_black, c_red, c_lime, 0, true, true)
+    }else{
+        // this space for rent
+    }
+    
+    //draw air bar when submerged
+    if oHoward.underWater{
+        draw_healthbar(oHoward.x-12,oHoward.y-8, oHoward.x-8, oHoward.y + 8, oHoward.air,c_black, c_blue, c_aqua, 3, true, true)
+    }else{
+        // blah
+    }
 }else{
-    // this space for rent
+    draw_sprite_ext(sName,0,view_xview[global.myView]+4,view_yview[global.myView]+115,2,2,image_angle,image_blend,image_alpha)
+    draw_healthbar(view_xview[global.myView]+70,view_yview[global.myView]+120, view_xview[global.myView]+235, view_yview[global.myView]+132, global.hp,c_black, c_red, c_lime, 0, true, true)
 }
 </string>
           </argument>
@@ -153,11 +132,13 @@ if oHoward.shieldOn{
           <argument>
             <kind>1</kind>
             <string>/// Debug
-
-if global.debug{
+if global.debug &amp;&amp; global.gameMove{
     draw_set_valign(fa_left);
-    draw_text(view_xview + 24, view_yview + 4, oHoward.status);
-    draw_text(view_xview + 24, view_yview + 20, (string(oHoward.jumpCount) + " / " + string(oHoward.jumpHeight)));
+    draw_text(view_xview[global.myView] + 24, view_yview[global.myView] + 4, oHoward.status);
+    draw_text(view_xview[global.myView] + 24, view_yview[global.myView] + 20, oHoward.status_blend);
+    draw_text(view_xview[global.myView] + 24, view_yview[global.myView] + 36, (string(oHoward.jumpCount) + " / " + string(oHoward.jumpHeight)));
+    draw_text(view_xview[global.myView] + 24, view_yview[global.myView] + 52, "obj:" + string(instance_count));
+    draw_text(view_xview[global.myView] + 24, view_yview[global.myView] + 68, string(fps) + " FPS");
 }
 </string>
           </argument>

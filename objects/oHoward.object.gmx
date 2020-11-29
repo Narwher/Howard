@@ -3,7 +3,7 @@
   <spriteName>sHoward_stand</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>-1</depth>
+  <depth>-2</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -25,37 +25,43 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///The Creation
+            <string>/// Init 
 jumpCount = 0; 
-jumpHeight = 52; //Modify for phun tymes
+jumpHeight = 52; // Modify for phun tymes
+jumpBoots = false;
 
 isJumping = false; 
 isFalling = false;
 
-status = "stand"; //"stand", "run", "in_air"
+status = "stand"; // "stand", "run", "in_air" "dead"
+status_blend = "normal" // "normal", "shield", "zap", "hurt" use for flashing player
 
-dir = 1; //-1 == left, 1 == right
-spr = ""; 
+dir = 1; // -1 = left, 1 = right
+spr = sHoward_stand; 
 blend = c_white 
 image_speed = .18;
 
-global.hp = 100;
 global.shp = 100;
 shieldOn = false;
-hasTrans = false; //if Howard has picked up Transform object (oShrink)
+hasTrans = false; // if Howard has picked up Transform object (oShrink)
+shoot = false;
+isShooting = false;
 
 big = true;
 sizex = 1; 
 sizey = 1; 
 
-alarm[1] = 1 //begin instance clear
+alarm[1] = 1 // begin instance clear
 
 talk = "";
-var inWater; 
+alarm[2] = 2 // talk
 
-targetList = ds_list_create(); // empty target list (for shooting)
+underWater = false;
+air = 100;
 
-global.debug = false;
+targetList = ds_list_create(); // empty target list (for shooting (old))
+pause = false;
+
 </string>
           </argument>
         </arguments>
@@ -81,11 +87,19 @@ instance_create(0,0, oHud);
 
 // Create joystick HUD
 if global.touch{
-    instance_create(view_xview[0] + 32, view_yview[0] + 90, oAnalog);
-    instance_create(view_xview[0] + 32, view_yview[0] + 90, oAnalogBack); 
-    instance_create(view_xview[0] + 176, view_yview[0] + 90, oShieldTouch);
-    instance_create(view_xview[0] + 208, view_yview[0] + 90, oShootTouch);
-    instance_create(view_xview[0] + 192, view_yview[0] + 58, oShrinkTouch);
+    instance_create(view_xview[global.myView] +  32,view_yview[global.myView] +  90, oAnalog);
+    instance_create(view_xview[global.myView] +  32,view_yview[global.myView] +  90, oAnalogBack); 
+    instance_create(0, 0, oShieldTouch);
+    instance_create(0, 0, oShootTouch);
+    instance_create(0, 0, oShrinkTouch);
+    
+    touch1  = virtual_key_add(400, 164, 32, 32, vk_space);
+    touch2 = virtual_key_add(368, 112, 32, 32, ord('X'));
+    touch3 = virtual_key_add(336, 164, 32, 32, ord('Z'));
+    
+    //virtual_key_show(touch1);
+    //virtual_key_show(touch2);
+    //virtual_key_show(touch3);
 }
 </string>
           </argument>
@@ -111,6 +125,7 @@ if global.touch{
             <kind>1</kind>
             <string>/// Reset talk 
 talk = "";
+global.gameMove = true;
 </string>
           </argument>
         </arguments>
@@ -134,29 +149,37 @@ talk = "";
           <argument>
             <kind>1</kind>
             <string>/// OOB Instance Deactivation 
-// Thanks Yaru
+if global.gameMove{
+    // deactivate all instances (except hud &amp; persistent objects)
+    instance_deactivate_all(true);
+    instance_activate_object(oHud);
+    instance_activate_object(oAnalog);
+    instance_activate_object(oAnalogBack);
+    instance_activate_object(oShieldTouch);
+    instance_activate_object(oShrinkTouch);
+    instance_activate_object(oShootTouch);
+    
+    // then activate terrain region
+    instance_activate_region(view_xview[global.myView]-64,view_yview[global.myView]-64,
+    view_wview[global.myView] + 128,view_hview[global.myView] + 128,true);
+    
+    // deactivate any object than could possibly fall/move thru ground/walls
+    instance_deactivate_object(oNPC);
+    instance_deactivate_object(oSmiley);
+    instance_deactivate_object(oImp);
+    instance_deactivate_object(oTrooper);
+    instance_deactivate_object(oBirb);
+    instance_deactivate_object(oPush);
+    instance_deactivate_object(oHplat);
+    instance_deactivate_object(oVplat);
+    instance_deactivate_object(oMine);
+    
+    // finally, activate all objects inside 'object graze border' (which is smaller than terrain one) 
+    instance_activate_region(view_xview[global.myView]-32,view_yview[global.myView]-32,
+    view_wview[global.myView] + 64,view_hview[global.myView] + 64,true);
+}
 
-// deactivate all instances
-instance_deactivate_all(true);
-
-// activate all terrain 
-instance_activate_object(oBlock);
-instance_deactivate_object(oPush);
-instance_deactivate_object(oHplat);
-instance_deactivate_object(oVplat);
-
-// then deactivate terrains outside 'terrain graze region'
-instance_deactivate_region(view_xview[0]-32,view_yview[0]-32,
-(view_xview[0] + (view_wview[0] + 64)),(view_yview[0] + (view_hview[0] + 64)),false,true);
-
-// activate all objects inside 'object graze border' (which is smaller than terrain one) 
-instance_activate_region(view_xview[0]-8,view_yview[0]-8,
-(view_xview[0] + (view_wview[0]+16)),(view_yview[0] + (view_hview[0] + 16)),true);
-instance_activate_object(oHud);
-instance_activate_object(oAnalog);
-instance_activate_object(oAnalogBack);
-
-alarm[1] = 2; // re-execute
+alarm[1] = 1; // re-execute
 
 
 </string>
@@ -222,17 +245,18 @@ if global.joykeys{
     jump = keyboard_check(vk_up) || gamepad_button_check(0,gp_padu) || (gamepad_axis_value(0, gp_axislv) &lt; 0);
     
     shoot = keyboard_check(vk_space) || gamepad_button_check(0,gp_face2);
-    shrink = keyboard_check_pressed(vk_down) || gamepad_button_check_pressed(0,gp_face3) || gamepad_button_check_pressed(0,gp_padd);
+    shrink = keyboard_check_pressed(ord('X')) || gamepad_button_check_pressed(0,gp_face3);
     shield = keyboard_check_pressed(ord('Z')) || gamepad_button_check_pressed(0,gp_face1);
+    start = keyboard_check_pressed(vk_enter) || gamepad_button_check_pressed(0,gp_start);
 }else if global.touch{
     left = oAnalog.x &lt; oAnalogBack.x - oAnalog.deadzone;
     right = oAnalog.x &gt; oAnalogBack.x + oAnalog.deadzone;
     down = oAnalog.y &gt; oAnalogBack.y + oAnalog.deadzone;
     jump = oAnalog.y &lt; oAnalogBack.y - oAnalog.deadzone;
     
-    shoot = (device_mouse_check_button(0, mb_left) || device_mouse_check_button(1, mb_left)) &amp;&amp; (collision_point(device_mouse_x(0), device_mouse_y(0), oShootTouch, true, false) || (collision_point(device_mouse_x(1), device_mouse_y(1), oShootTouch, true, false)));
-    shrink = (device_mouse_check_button_pressed(0, mb_left)  || device_mouse_check_button(1, mb_left)) &amp;&amp; (collision_point(device_mouse_x(0), device_mouse_y(0), oShrinkTouch, true, false) || (collision_point(device_mouse_x(0), device_mouse_y(0), oShrinkTouch, true, false))) &amp;&amp; oShrinkTouch.visible == true;
-    shield = (device_mouse_check_button_pressed(0, mb_left) || device_mouse_check_button(1, mb_left)) &amp;&amp; (collision_point(device_mouse_x(0), device_mouse_y(0), oShieldTouch, true, false) || (collision_point(device_mouse_x(0), device_mouse_y(0), oShieldTouch, true, false))) &amp;&amp; oShieldTouch.visible == true;
+    shoot =  keyboard_check(vk_space);
+    shrink = keyboard_check_pressed(ord('X'))  &amp;&amp; oShrinkTouch.visible;
+    shield = keyboard_check_pressed(ord('Z')) &amp;&amp; oShieldTouch.visible;
 }
 
 debugKey = keyboard_check_pressed(ord('D')) || gamepad_button_check_pressed(0,gp_select);
@@ -257,8 +281,33 @@ talkKey = keyboard_check_pressed(ord('A')) || gamepad_button_check_pressed(0,gp_
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// States
-inWater = place_meeting(x,y,oWater); 
+            <string>/// View movement (non locking to borders)
+view_xview[global.myView] = x - view_wview[global.myView]/2;
+view_yview[global.myView] = y - view_hview[global.myView]/2;
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// States and health
+underWater = place_meeting(x,y,oWater); 
+
+if global.hp &gt; 100 global.hp = 100;
 </string>
           </argument>
         </arguments>
@@ -280,140 +329,114 @@ inWater = place_meeting(x,y,oWater);
           <argument>
             <kind>1</kind>
             <string>/// Movement
-if !inWater{
-    if left{
-        dir = -1; 
-        if place_free(x - 2,y){
-            status = "run";
-            x -= 2;
+if global.gameMove{
+    if !underWater{
+        if left{
+            dir = -1; 
+            if place_free(x - 2,y){
+                status = "run";
+                x -= 2;
+            }else{
+                status = "stand";
+            }
+        }else if right{
+            dir = 1; 
+            if place_free(x + 2,y){
+                status = "run";
+                x += 2;
+            }else{
+                status = "stand";
+            }
         }else{
             status = "stand";
-        }
-    }else if right{
-        dir = 1; 
-        if place_free(x + 2,y){
-            status = "run";
-            x += 2;
-        }else{
-            status = "stand";
-        }
-    }else{
-        status = "stand";
-    }
-    
-    // "Gravity"
-    if place_free(x,y + 2){
-        status = "in_air";
-        if isFalling{
-            y += 2;
-        }
-    }else{
-        if !place_meeting(x, y + 2,oPush){
-            move_contact_solid(270,-1);
         }
         
-        isFalling = false;
-        jumpCount = 0;
-    }
-    
-    
-    if jump{
-        if (jumpCount &lt; jumpHeight){
-            if !isFalling{
-                if place_free (x, y - 2){
-                    y -= 2;
+        // "Gravity"
+        if place_free(x,y + 2){
+            status = "in_air";
+            if isFalling{
+                y += 2;
+            }
+        }else{
+            if !place_meeting(x, y + 2,oPush){
+                move_contact_solid(270,-1);
+            }
+            
+            isFalling = false;
+            jumpCount = 0;
+        }
+        
+        
+        if jump{
+            if (jumpCount &lt; jumpHeight){
+                if !isFalling{
+                    if place_free (x, y - 2){
+                        y -= 2;
+                    }
+                    jumpCount +=1;
                 }
-                jumpCount +=1;
+            }else{
+                isFalling = true;
             }
         }else{
             isFalling = true;
         }
     }else{
-        isFalling = true;
-    }
-}else{
-    if left{
-        dir = -1; 
-        if place_free(x - 1,y){
-            status = "run";
-            x -= 1;
+        if left{
+            dir = -1; 
+            if place_free(x - 1,y){
+                status = "run";
+                x -= 1;
+            }else{
+                status = "stand";
+            }
+        }else if right{
+            dir = 1; 
+            if place_free(x + 1,y){
+                status = "run";
+                x += 1;
+            }else{
+                status = "stand";
+            }
         }else{
             status = "stand";
-        }
-    }else if right{
-        dir = 1; 
-        if place_free(x + 1,y){
-            status = "run";
-            x += 1;
-        }else{
-            status = "stand";
-        }
-    }else{
-        status = "stand";
-    }
-    
-    if place_free(x,y + 1){
-        status = "in_air";
-        if isFalling{
-            y += 1;
-        }
-    }else{
-        if !place_meeting(x, y + 2,oPush){
-            move_contact_solid(270,-1);
         }
         
-        isFalling = false;
-        jumpCount = 0;
-    }
-    
-    
-    if jump{
-        if (jumpCount &lt; jumpHeight){
-            if !isFalling{
-                if place_free (x, y - 1){
-                    y -= 1;
+        if place_free(x,y + 1){
+            status = "in_air";
+            if isFalling{
+                y += 1;
+            }
+        }else{
+            if !place_meeting(x, y + 2,oPush){
+                move_contact_solid(270,-1);
+            }
+            
+            isFalling = false;
+            jumpCount = 0;
+        }
+        
+        
+        if jump{
+            if (jumpCount &lt; jumpHeight){
+                if !isFalling{
+                    if place_free (x, y - 1){
+                        y -= 1;
+                    }
+                    jumpCount +=.5;
                 }
-                jumpCount +=.5;
+            }else{
+                isFalling = true;
             }
         }else{
             isFalling = true;
         }
-    }else{
-        isFalling = true;
     }
 }
 
 
 
 
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/// Choose Sprite
-if status == "stand"{
-   spr = sHoward_stand;
-}else if status == "run"{
-   spr = sHoward_run;
-}else if status == "in_air"{
-   spr = sHoward_jet;
-}
 </string>
           </argument>
         </arguments>
@@ -437,36 +460,37 @@ if status == "stand"{
             <string>/// Collide with Stuff
 // (copy and paste for each stuff:^| )
 
+if global.gameMove{
 
 //-----------------------------------------------//
 // Emoji
 if place_meeting(x,y,oSmiley){
    if !shieldOn{
       global.hp = global.hp - oSmiley.damage;
-      blend = choose(c_red, c_white);
+      status_blend = "hurt";
    }else{
       global.shp = global.shp - oSmiley.damage;
-      global.hp = global.hp - 0.20;
+      global.hp = global.hp - 0.10;
    }
 }else{
    if !shieldOn{
-      blend = c_white;
+      status_blend = "normal";
    }
 }
 
 //-----------------------------------------------//
 // Imp
-if place_meeting(x,y,oImp) &amp;&amp; oImp.state == "attack"{
+if place_meeting(x,y,oImp) {//&amp;&amp; oImp.state == "attack"{
     if !shieldOn{
         global.hp = global.hp - oImp.damage;
-        blend = choose(c_red, c_white);
+        status_blend = "hurt";
     }else{
         global.shp = global.shp - oImp.damage;
-        global.hp = global.hp - 0.20;
+        global.hp = global.hp - 0.10;
     }
 }else{
     if !shieldOn{
-        blend = c_white;
+        status_blend = "normal"
     }
 }
 
@@ -475,53 +499,165 @@ if place_meeting(x, y + 2,oImp){
     isFalling = false;
     jumpCount = 0;
     status = "stand";
+    status_blend = "normal";
 }
 
 //-----------------------------------------------//
 // Lava
-if place_meeting(x, y + 1,oLava){
+if place_meeting(x, y + 2,oLava){
     if !shieldOn{
-        global.hp -= .15;
-        blend = choose(c_red, c_white);
+        global.hp -= .4;
+        status_blend = "hurt";
     }else{
         global.shp = global.shp - 1;
+        global.hp = global.hp - 0.10;
     }
 }else{
-    if !shieldOn &amp;&amp; !place_meeting(x,y,oElecFence){
-        blend = c_white;
+    if !shieldOn{
+        status_blend = "normal";
     }
 }
 
 //-----------------------------------------------//
 // Conveyor Belts
-if place_meeting(x,y + 1,oConveyorRight) &amp;&amp; place_empty(x + 2,y){
+if place_meeting(x,y + 1,oConveyorRight) &amp;&amp; place_free(x + 2,y){
     // sometimes life is easy
     x += 1;
 }
 
-if place_meeting(x,y + 1,oConveyorLeft) &amp;&amp; place_empty(x - 2,y){
+if place_meeting(x,y + 1,oConveyorLeft) &amp;&amp; place_free(x - 2,y){
     x -= 1;
 }
 
 //-----------------------------------------------//
-// Electric Fence
-if instance_exists(oElecFence)
-&amp;&amp; collision_rectangle(oElecFence.bbox_left - 32, oElecFence.bbox_top, oElecFence.bbox_right + 32, oElecFence.bbox_bottom,oHoward,false,false){
-    if !shieldOn{
-        global.hp -= .15;
-        blend = choose(c_blue, c_white, c_gray, c_aqua);
-    }else{
-        global.shp = global.shp - 1;
-    }
+// Electric Fence (just the zaps)
+if place_meeting(x,y,oZap){
+   if !shieldOn{
+      global.hp = global.hp - oZap.damage;
+      status_blend = "zap";
+   }else{
+      global.shp = global.shp - oZap.damage;
+      global.hp = global.hp - 0.10;
+   }
 }else{
-    if !shieldOn &amp;&amp; !place_meeting(x,y,oLava){
-        blend = c_white;
-    }
+   if !shieldOn{
+      status_blend = "normal";
+   }
+}
+
+//-----------------------------------------------//
+// Bullets
+if place_meeting(x,y,oBullet){
+   if !shieldOn{
+      global.hp = global.hp - oBullet.damage;
+      status_blend = "hurt";
+   }else{
+      global.shp = global.shp - oBullet.damage;
+      global.hp = global.hp - 0.10;
+   }
+}else{
+   if !shieldOn{
+      status_blend = "normal";
+   }
+}
+
 }
 
 
 
 
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Wall-unstuck code
+/*if place_meeting(bbox_right-4,y,oBlock){
+    if place_free(bbox_left,y){
+        x -= 1
+    }else if place_free(x,bbox_top){
+        y -= 1   
+    }else if place_free(x,bbox_bottom){
+        y += 1  
+    } 
+}else if place_meeting(bbox_left+4,y,oBlock){
+    if place_free(bbox_right,y){
+        x += 1
+    }else if place_free(x,bbox_top){
+        y -= 1   
+    }else if place_free(x,bbox_bottom){
+        y += 1  
+    }  
+}
+
+if place_meeting(x,bbox_top-4,oBlock){
+    if place_free(x,bbox_bottom){
+        y += 1
+    }
+}else if place_meeting(x,bbox_bottom+4,oBlock){
+    if place_free(bbox_top,y){
+        y -= 1
+    }
+}
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Ice stuff
+if global.gameMove{
+    if left &amp;&amp; place_meeting(x,y + 2, oIce) &amp;&amp; place_empty(x - 2,y){
+        if hspeed &gt; -1{
+            hspeed -= .1; //.05
+        }
+    }else if right &amp;&amp; place_meeting(x,y + 2, oIce) &amp;&amp; place_empty(x + 2,y){
+        if hspeed &lt; 1{
+            hspeed += .1;
+        }   
+    }else if place_meeting(x,y + 2, oIce){
+        if hspeed &lt; 0{
+            hspeed += .0025;
+        }else if hspeed &gt; 0{
+            hspeed -= .0025; //.005
+        }       
+    }else{
+        hspeed = 0;
+    }
+}else{
+    hspeed = 0;
+}
 </string>
           </argument>
         </arguments>
@@ -544,7 +680,8 @@ if instance_exists(oElecFence)
             <kind>1</kind>
             <string>/// Game Over
 if global.hp &lt;= 0 {
-   room_goto(rm_gameover);
+   global.gameMove = false;
+   instance_change(oHoward_die,true);
 }
 </string>
           </argument>
@@ -566,32 +703,75 @@ if global.hp &lt;= 0 {
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Shield
-if shield{
-   if !shieldOn &amp;&amp; global.hp &gt; 20{
-       global.hp -= 10; // uses energy
-       score -= 100;
-       shieldOn = true;
-       alarm[0] = 1; // calls alarm 0, starting shield timer
-   }else if shieldOn &amp;&amp; global.hp &gt; 20 &amp;&amp; global.shp &lt; 20 {
-       global.hp -= 10;
-       score -= 100;
-       global.shp = 100;
-       alarm[0] = 1;
-   }
+            <string>/// Pause game
+if global.joykeys &amp;&amp; start{
+    if global.gameMove{
+        global.gameMove = false;
+        talk = "Game Paused.";
+        pause = true;
+        sound_play(snd_pause);
+    }else{
+        global.gameMove = true;
+        talk = "";
+        pause = false;
+        sound_play(snd_unpause);
+    }
 }
 
-// test shield health
-if global.shp &lt;= 0{
-   shieldOn = false;
-   global.shp = 100;
-}
-
-// change character color
-if shieldOn{
-   blend = choose(c_lime, c_aqua, c_blue);
+if !global.gameMove{
+    image_speed = 0;
 }else{
-   // whatever man
+    image_speed = .15;
+}
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Shield
+if global.gameMove{
+    if shield{
+       if !shieldOn &amp;&amp; global.hp &gt; 20{
+           global.hp -= 10; // uses energy
+           global.shp = 100;
+           shieldOn = true;
+           alarm[0] = 1; // calls alarm 0, starting shield timer
+       }else if shieldOn &amp;&amp; global.hp &gt; 20 &amp;&amp; global.shp &lt; 20 {
+           global.hp -= 10;
+           score -= 100;
+           global.shp = 100;
+           alarm[0] = 1;
+       }
+    }
+    
+    // test shield health
+    if global.shp &lt;= 0{
+       shieldOn = false;
+       global.shp = 100;
+    }
+    
+    // change character color
+    if shieldOn{
+       status_blend = "shield";
+    }else{
+       // whatever man
+    }
 }
 </string>
           </argument>
@@ -614,231 +794,314 @@ if shieldOn{
           <argument>
             <kind>1</kind>
             <string>/// Shrink
-if shrink{
-   if hasTrans{
-      if big{
-         big = false;
-      }else{
-         if place_free(x,y-8){
-            y -=4 ;
-            big = true;
-         }
-      }
-   // this is a comment
-   }
-}
-
-
-// size checks
-if big{
-   mask_index = sBig_mask;
-   sizex = 1;
-   sizey = 1;
-}else{
-   mask_index = sSmall_mask;
-   sizex = 0.5;
-   sizey = 0.5;
-}
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/// Shoot (rework)
-/*
-if shoot{
-    isShooting = true;
-    max_length = 180;
-    
-    global.hp -= .020;    
-
-    if instance_exists(oTarget){
-        // if target is detected (unobstructed) in view, add to target list
-        with (oTarget){
-            if ((bbox_right &gt;= view_xview[0]+120) &amp;&amp; (bbox_left &lt; view_xview[0] + view_wview[0]) &amp;&amp; (bbox_bottom &gt; view_yview[0]) &amp;&amp; (bbox_top &lt; view_yview[0] + view_hview[0]) &amp;&amp; oHoward.dir == 1)
-            &amp;&amp; (!collision_line(x, y, oHoward.x, oHoward.y, oBlock, false, true)){
-                ds_list_add(oHoward.targetList, id);
-            }
-        }
-        
-        if (ds_list_size(targetList) &gt; 1){
-            // loop through targets and shoot them!
-            for (i = 0; i &lt; ds_list_size(targetList); i++){
-                myTarget = targetList[| i];
-                direction = point_direction(x, y, myTarget.x, myTarget.y);
-
-                for(j = 0; j &lt; max_length; j++){
-                    lx = x + lengthdir_x(i, direction);
-                    ly = y + lengthdir_y(i, direction);
-                    if(collision_point(lx, ly, oBlock, false, true))
-                    or(collision_point(lx, ly, oTarget, false, true)){
-                        break;
-                    }
-                }
-                height = sin(random(1));
-
-                // target take damage          
-                with (myTarget){
-                     hp -= 1;
-                     image_blend = choose(c_red,c_white);
-                }   
-                
-                //ds_list_delete(targetList, i); 
-            }          
-        }
-    }else{
-        // shoot straight forward if no target present
-        direction = point_direction(x,y, view_xview[0]+180*dir, y-4);
-
-        for(i = 0; i &lt; max_length; i += 1){
-            lx = x + lengthdir_x(i, direction);
-            ly = y + lengthdir_y(i, direction);
-            if(collision_point(lx, ly, oBlock, false, true))
-            or(collision_point(lx, ly, oTarget, false, true)){
-                break;
-            }
-        }
-    }
-}else{
-    isShooting = false;
-}
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/// Shoot (old one)
-if instance_exists(oTarget){
-    if !collision_line(x,y,instance_nearest(x,y,oTarget).x,instance_nearest(x,y,oTarget).y, oBlock,false,true){
-        target = instance_nearest(x,y,oTarget);
-    }else{
-        target = instance_nth_nearest(x,y,oTarget,5);
-    }
-}
-
-if instance_exists(target){
-    if ((target.bbox_right &gt;= view_xview[0]+120) &amp;&amp; (target.bbox_left &lt; view_xview[0] + view_wview[0]) &amp;&amp; (target.bbox_bottom &gt; view_yview[0]) &amp;&amp; (target.bbox_top &lt; view_yview[0] + view_hview[0]) &amp;&amp; dir == 1){
-        if (!collision_line(x, y, target.x, target.y, oBlock, false, true)){
-            if shoot{
-                isShooting = true;
-                global.hp -= .020;
-                direction = point_direction(x,y, target.x, target.y);
-                max_length = 180;
-
-                for(i = 0; i &lt; max_length; i+=1){
-                    lx = x + lengthdir_x(i, direction);
-                    ly = y + lengthdir_y(i, direction);
-                    if(collision_point(lx, ly, oBlock, false, true))
-                    or(collision_point(lx, ly, oTarget, false, true)){
-                    break;
-                    }
-                }
-                height = sin(random(1));
-
-                // take damage          
-                with (target){
-                     hp -=1;
-                     image_blend = choose(c_red,c_white);
-                }
-            
-            }else{
-                isShooting = false;
-                with (target){
-                    image_blend = c_white;
-                }
-                target = noone;
-            }
-        }
-       else target = noone;
-
-    }else if ((target.bbox_right &gt; view_xview[0]) &amp;&amp; (target.bbox_left &lt; view_xview[0] + 120) &amp;&amp; (target.bbox_bottom &gt; view_yview[0]) &amp;&amp; (target.bbox_top &lt; view_yview[0] + view_hview[0]) &amp;&amp; dir == -1)
-        {
-        if (!collision_line(x, y, target.x, target.y, oBlock, false, true))
-            {
-            if shoot{
-                isShooting = true;
-                global.hp -= .020;
-                direction = point_direction(x,y, target.x, target.y);
-                max_length = 180;
-
-                for(i = 0; i &lt; max_length; i+=1){
-                    lx = x + lengthdir_x(i, direction);
-                    ly = y + lengthdir_y(i, direction);
-                    if(collision_point(lx, ly, oBlock, false, true))
-                    or(collision_point(lx, ly, oTarget, false, true)){
-                    break;
-                    }
-                }
-
-                // take damage
-                with (target){
-                     hp -=1;
-                     image_blend = choose(c_red,c_white);
-                }
-
-            }else{
-                isShooting = false;
-                with (target){
-                    image_blend = c_white;
-                }
-                target = noone;
-            }
+if global.gameMove{
+    if shrink{
+       if hasTrans{
+          if big{
+             big = false;
+          }else{
+             if place_free(x,y-8){
+                y -= 4;
+                big = true;
+             }
+          }
+       // this is a comment
        }
-    else target = noone;
     }
-else target = noone;
-}else target = noone;
-
-if target == noone{
-    if shoot{
-        isShooting = true;
-        global.hp -= .020;
-        direction = point_direction(x,y, view_xview[0]+180*dir, y-4);
-        max_length = 180;
-
-        for(i = 0; i &lt; max_length; i+=1){
-            lx = x + lengthdir_x(i, direction);
-            ly = y + lengthdir_y(i, direction);
-            if(collision_point(lx, ly, oBlock, false, true))
-            or(collision_point(lx, ly, oTarget, false, true)){
-            break;
-            }
-        }
+    
+    
+    // size checks
+    if big{
+       mask_index = sBig_mask;
+       sizex = 1;
+       sizey = 1;
     }else{
-        isShooting = false;
+       mask_index = sSmall_mask;
+       sizex = 0.5;
+       sizey = 0.5;
+    }
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Shoot
+if global.gameMove{
+    if instance_exists(oTarget){
+        if !collision_line(x,y,instance_nearest(x,y,oTarget).x,instance_nearest(x,y,oTarget).y, oBlock,false,true){
+            target = instance_nearest(x,y,oTarget);
+        }else{
+            target = instance_nth_nearest(x,y,oTarget,5);
+        }
+    }
+    
+    if instance_exists(target){
+        if ((target.bbox_right &gt;= view_xview[global.myView]+120) &amp;&amp; (target.bbox_left &lt; view_xview[global.myView] + 240) &amp;&amp; (target.bbox_bottom &gt; view_yview[global.myView]) &amp;&amp; (target.bbox_top &lt; view_yview[global.myView] + 136) &amp;&amp; dir == 1){
+            if (!collision_line(x, y, target.x, target.y, oBlock, false, true)){
+                if shoot{
+                    isShooting = true;
+                    global.hp -= .020;
+                    direction = point_direction(x,y, target.x, target.y);
+                    max_length = 180;
+    
+                    for(i = 0; i &lt; max_length; i+=1){
+                        lx = x + lengthdir_x(i, direction);
+                        ly = y + lengthdir_y(i, direction);
+                        if(collision_point(lx, ly, oBlock, false, true))
+                        or(collision_point(lx, ly, oTarget, false, true)){
+                        break;
+                        }
+                    }
+                    height = sin(random(1));
+    
+                    // take damage          
+                    with (target){
+                         hp -=1;
+                         image_blend = choose(c_red,c_white);
+                    }
+                
+                }else{
+                    isShooting = false;
+                    with (target){
+                        image_blend = c_white;
+                    }
+                    target = noone;
+                }
+            }
+           else target = noone;
+    
+        }else if ((target.bbox_right &gt; view_xview[global.myView]) &amp;&amp; (target.bbox_left &lt; view_xview[global.myView] + 120) &amp;&amp; (target.bbox_bottom &gt; view_yview[global.myView]) &amp;&amp; (target.bbox_top &lt; view_yview[global.myView] + 136) &amp;&amp; dir == -1)
+            {
+            if (!collision_line(x, y, target.x, target.y, oBlock, false, true))
+                {
+                if shoot{
+                    isShooting = true;
+                    global.hp -= .020;
+                    direction = point_direction(x,y, target.x, target.y);
+                    max_length = 180;
+    
+                    for(i = 0; i &lt; max_length; i+=1){
+                        lx = x + lengthdir_x(i, direction);
+                        ly = y + lengthdir_y(i, direction);
+                        if(collision_point(lx, ly, oBlock, false, true))
+                        or(collision_point(lx, ly, oTarget, false, true)){
+                            break;
+                        }
+                    }
+    
+                    // take damage
+                    with (target){
+                         hp -=1;
+                         image_blend = choose(c_red,c_white);
+                    }
+    
+                }else{
+                    isShooting = false;
+                    with (target){
+                        image_blend = c_white;
+                    }
+                    target = noone;
+                }
+           }
+        else target = noone;
+        }
+    else target = noone;
+    }else target = noone;
+    
+    if target == noone{
+        if shoot{
+            isShooting = true;
+            global.hp -= .020;
+            direction = point_direction(x,y, view_xview[global.myView]+180*dir, y-4);
+            max_length = 180;
+    
+            for(i = 0; i &lt; max_length; i+=1){
+                lx = x + lengthdir_x(i, direction);
+                ly = y + lengthdir_y(i, direction);
+                if(collision_point(lx, ly, oBlock, false, true))
+                or(collision_point(lx, ly, oTarget, false, true)){
+                    break;
+                }
+            }
+        }else{
+            isShooting = false;
+        }
     }
 }
 
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Shoot (backup)
+/*
+if global.gameMove{
+    if instance_exists(oTarget){
+        if !collision_line(x,y,instance_nearest(x,y,oTarget).x,instance_nearest(x,y,oTarget).y, oBlock,false,true){
+            target = instance_nearest(x,y,oTarget);
+        }else{
+            target = instance_nth_nearest(x,y,oTarget,5);
+        }
+    }
+    
+    if instance_exists(target){
+        if ((target.bbox_right &gt;= view_xview[global.myView]+120) &amp;&amp; (target.bbox_left &lt; view_xview[global.myView] + view_wview[global.myView]) &amp;&amp; (target.bbox_bottom &gt; view_yview[global.myView]) &amp;&amp; (target.bbox_top &lt; view_yview[global.myView] + view_hview[global.myView]) &amp;&amp; dir == 1){
+            if (!collision_line(x, y, target.x, target.y, oBlock, false, true)){
+                if shoot{
+                    isShooting = true;
+                    global.hp -= .020;
+                    direction = point_direction(x,y, target.x, target.y);
+                    max_length = 180;
+    
+                    for(i = 0; i &lt; max_length; i+=1){
+                        lx = x + lengthdir_x(i, direction);
+                        ly = y + lengthdir_y(i, direction);
+                        if(collision_point(lx, ly, oBlock, false, true))
+                        or(collision_point(lx, ly, oTarget, false, true)){
+                        break;
+                        }
+                    }
+                    height = sin(random(1));
+    
+                    // take damage          
+                    with (target){
+                         hp -=1;
+                         image_blend = choose(c_red,c_white);
+                    }
+                
+                }else{
+                    isShooting = false;
+                    with (target){
+                        image_blend = c_white;
+                    }
+                    target = noone;
+                }
+            }
+           else target = noone;
+    
+        }else if ((target.bbox_right &gt; view_xview[global.myView]) &amp;&amp; (target.bbox_left &lt; view_xview[global.myView] + 120) &amp;&amp; (target.bbox_bottom &gt; view_yview[global.myView]) &amp;&amp; (target.bbox_top &lt; view_yview[global.myView] + view_hview[global.myView]) &amp;&amp; dir == -1)
+            {
+            if (!collision_line(x, y, target.x, target.y, oBlock, false, true))
+                {
+                if shoot{
+                    isShooting = true;
+                    global.hp -= .020;
+                    direction = point_direction(x,y, target.x, target.y);
+                    max_length = 180;
+    
+                    for(i = 0; i &lt; max_length; i+=1){
+                        lx = x + lengthdir_x(i, direction);
+                        ly = y + lengthdir_y(i, direction);
+                        if(collision_point(lx, ly, oBlock, false, true))
+                        or(collision_point(lx, ly, oTarget, false, true)){
+                            break;
+                        }
+                    }
+    
+                    // take damage
+                    with (target){
+                         hp -=1;
+                         image_blend = choose(c_red,c_white);
+                    }
+    
+                }else{
+                    isShooting = false;
+                    with (target){
+                        image_blend = c_white;
+                    }
+                    target = noone;
+                }
+           }
+        else target = noone;
+        }
+    else target = noone;
+    }else target = noone;
+    
+    if target == noone{
+        if shoot{
+            isShooting = true;
+            global.hp -= .020;
+            direction = point_direction(x,y, view_xview[global.myView]+180*dir, y-4);
+            max_length = 180;
+    
+            for(i = 0; i &lt; max_length; i+=1){
+                lx = x + lengthdir_x(i, direction);
+                ly = y + lengthdir_y(i, direction);
+                if(collision_point(lx, ly, oBlock, false, true))
+                or(collision_point(lx, ly, oTarget, false, true)){
+                    break;
+                }
+            }
+        }else{
+            isShooting = false;
+        }
+    }
+}
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Lose o2/hp in water
+if global.gameMove{
+    if underWater{
+        air -= .06;
+    }else{
+        air = 100;
+    }
+    
+    if air &lt; 0 {
+        global.hp -= .5;
+    }
+}
 </string>
           </argument>
         </arguments>
@@ -860,32 +1123,79 @@ if target == noone{
           <argument>
             <kind>1</kind>
             <string>/// Push Block
-
-instRight = instance_place(x + 2,y,oPush);
-instLeft = instance_place(x - 2,y,oPush);
-
-if instRight != noone{
-    if right and big{
-        with instRight{
-            if place_empty(x + 2,y){
-                x += 2;
+if global.gameMove{
+    instRight = instance_place(x + 2,y,oPush);
+    instLeft = instance_place(x - 2,y,oPush);
+    
+    if instRight != noone{
+        if right and big{
+            with instRight{
+                if place_empty(x + 2,y){
+                    x += 2;
+                }
+            }
+        }
+    }else if instLeft != noone{
+        if left and big{
+            with instLeft{
+                if place_empty(x - 2,y){
+                    x -= 2;
+                }        
             }
         }
     }
-}else if instLeft != noone{
-    if left and big{
-        with instLeft{
-            if place_empty(x - 2,y){
-                x -= 2;
-            }        
+    
+    // Move with block on conveyor belt
+    if place_meeting(x,y+1,oPush){
+        x += oPush.hspeed;
+    }
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Choose Sprite &amp; blend
+if global.gameMove{
+    if status == "stand"{
+       spr = sHoward_stand;
+    }else if status == "run"{
+       spr = sHoward_run;
+    }else if status == "in_air"{
+        if jumpBoots{
+            spr = sHoward_jump_jet;
+        }else{
+            spr = sHoward_jet;
         }
+    }
+
+// flashing player colors (based on status_blend)
+    if status_blend == "normal"{
+        blend = c_white;
+    }else if status_blend == "shield"{
+        blend = choose(c_lime, c_aqua, c_blue);
+    }else if status_blend == "zap"{
+        blend = choose(c_blue, c_white, c_gray, c_aqua);
+    }else if status_blend == "hurt"{
+        blend = choose(c_red, c_white);
     }
 }
 
-// Move with block on conveyor belt
-if place_meeting(x,y+1,oPush){
-    x += oPush.hspeed;
-}
 </string>
           </argument>
         </arguments>
@@ -937,7 +1247,9 @@ if global.debug{
     
     // insta win
     if keyboard_check_pressed(ord('W')){
-        room_goto(rm_win);
+        if room == rm_1 {room_goto(rm_win);}
+        else if room == rm_2 {room_goto(rm_win2);}
+        else if room == rm_3 {room_goto(rm_win3);}
     }
     
     // restart game
@@ -945,8 +1257,45 @@ if global.debug{
         sound_stop_all();
         game_restart();  
     }
-}else{
-    jumpHeight = 52;
+}else{  
+    if jumpBoots{
+        jumpHeight = 100;
+    }else{
+        jumpHeight = 52;
+    }
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="4" ename="oJump">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Pickup Jump Boots
+hasTrans = true;
+jumpHeight = 100;
+jumpBoots = true;
+
+talk = "Jump Boost!";
+alarm[2] = 100;
+
+with other{
+     instance_destroy();
 }
 </string>
           </argument>
@@ -972,6 +1321,10 @@ if global.debug{
             <kind>1</kind>
             <string>/// Pickup Shrinker
 hasTrans = true;
+
+talk = "Shrink!"
+alarm[2] = 100;
+
 with other{
      score += 500;
      instance_destroy();
@@ -999,7 +1352,7 @@ with other{
           <argument>
             <kind>1</kind>
             <string>/// Goto target room
-room_goto(rm_win);
+room_goto(oNext.level);
 
 </string>
           </argument>
@@ -1053,7 +1406,7 @@ if big{
 draw_sprite_ext(spr, image_index, x, y, sizex*dir, sizey, image_angle, blend, image_alpha );
 
 // laser
-if isShooting{
+if isShooting &amp;&amp; global.gameMove{
     // pulse laser code: thanks to reddit users [FmMan3] and [oldmankc]
     height = sin(random(1));
     draw_set_color(c_blue);
@@ -1070,12 +1423,41 @@ draw_set_font(fnt_system);
 draw_set_halign(fa_middle);
 draw_text(x,playerHeight-24,talk);
 
+// pause
+if pause &amp;&amp; !global.gameMove{
+    draw_sprite_ext(sPause,0,view_xview[global.myView],view_yview[global.myView],240,136,image_angle,image_blend,image_alpha);
+}
+
 // debig
 if global.debug{
     draw_sprite_ext(mask_index,0,x,y,1,1,0,c_aqua,0.5);
 }
 
 
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="80">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>myRoom = get_string("Enter room name: ","rm_1");
+room_goto(asset_get_index(myRoom));
 </string>
           </argument>
         </arguments>

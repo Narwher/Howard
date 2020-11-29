@@ -26,18 +26,21 @@
           <argument>
             <kind>1</kind>
             <string>/// Gravity
-
-if bbox_right &gt; view_xview
-&amp;&amp; bbox_left &lt; view_xview + view_wview
-&amp;&amp; bbox_bottom &gt; view_yview
-&amp;&amp; bbox_top &lt; view_yview + view_hview{
-    if place_empty(x,y + 2){
-        y += 2;
+if global.gameMove{
+    if bbox_right &gt; view_xview[global.myView]
+    &amp;&amp; bbox_left &lt; view_xview[global.myView] + view_wview[global.myView]
+    &amp;&amp; bbox_bottom &gt; view_yview[global.myView]
+    &amp;&amp; bbox_top &lt; view_yview[global.myView] + view_hview[global.myView]{
+        if place_empty(x,y + 2){
+            y += 2;
+        }else{
+            y = yprevious;
+        }
     }else{
         y = yprevious;
     }
 }else{
-y = yprevious;
+    y = yprevious;
 }
 
 </string>
@@ -61,12 +64,28 @@ y = yprevious;
           <argument>
             <kind>1</kind>
             <string>/// Collide with conveyor
-if place_meeting(x,y + 1,oConveyorRight) &amp;&amp; place_empty(x + 1,y){
-    hspeed = 1;
-}else if place_meeting(x,y + 1,oConveyorLeft) &amp;&amp; place_empty(x - 1,y){
-    hspeed = -1;
+if global.gameMove{
+    if place_meeting(x,y + 1,oConveyorLeft){
+        if place_free(x - 1,y){
+            hspeed = -1;
+        }else{
+            hspeed = 0;
+            x = xprevious;
+        }
+    }else if place_meeting(x,y + 1,oConveyorRight){
+        if place_free(x + 1,y){
+            hspeed = 1;
+        }else{
+            hspeed = 0;
+            x = xprevious;
+        }
+    }else{
+        hspeed = 0;
+    }
 }else{
     hspeed = 0;
+    x = xprevious
+    y = yprevious;
 }
 </string>
           </argument>

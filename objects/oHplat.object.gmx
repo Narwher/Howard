@@ -50,19 +50,22 @@ dir = choose (1,-1);
           <argument>
             <kind>1</kind>
             <string>/// Move platform
-
-if dir == 1{
-    if place_free(x+1,y){
-        hspeed = 1;
-    }else{
-        dir = -1;
+if global.gameMove{
+    if dir == 1{
+        if place_free(x+2,y){
+            hspeed = 1;
+        }else{
+            dir = -1;
+        }
+    }else if dir == -1{
+        if place_free(x-2,y){
+            hspeed = -1;
+        }else{
+            dir = 1;
+        }
     }
-}else if dir == -1{
-    if place_free(x-1,y){
-        hspeed = -1;
-    }else{
-        dir = 1;
-    }
+}else{
+    hspeed = 0;
 }
 </string>
           </argument>
@@ -85,10 +88,21 @@ if dir == 1{
           <argument>
             <kind>1</kind>
             <string>/// Platform to Player Collison
-if !place_meeting(x,y,oHoward) &amp;&amp; place_meeting(x,y-1,oHoward){
-    oHoward.x += hspeed
-    oHoward.y += vspeed
+if global.gameMove{
+    if !place_meeting(x,y,oHoward) &amp;&amp; place_meeting(x,y-1,oHoward){
+        if (hspeed &gt; 0) &amp;&amp; place_free(x+8, y-8){
+            oHoward.x += hspeed;
+            oHoward.y += vspeed;
+        }if (hspeed &lt; 0) &amp;&amp; place_free(x-8, y-8){
+            oHoward.x += hspeed;
+            oHoward.y += vspeed;   
+        }
+    }else{
+        oHoward.x = oHoward.x;
+        oHoward.y = oHoward.y;
+    }
 }
+
 </string>
           </argument>
         </arguments>
@@ -110,13 +124,31 @@ if !place_meeting(x,y,oHoward) &amp;&amp; place_meeting(x,y-1,oHoward){
           <argument>
             <kind>1</kind>
             <string>/// Living Collisions
-
-if place_meeting(x+2, y, oHoward) || place_meeting(x-2,y, oHoward){
-    dir *= -1
-}
-
-if place_meeting(x+2, y, oEnemy) || place_meeting(x-2,y, oEnemy){
-    dir *= -1
+if global.gameMove{
+    if place_meeting(x+2, y, oHoward) &amp;&amp; !place_meeting(x, y-2, oHoward){
+        if hspeed &gt; 0{
+            if place_free(x + 8,y){
+                oHoward.x += 1
+            }else{
+                global.hp -= 10;
+                dir = -1
+            }
+        }else{
+            if oHoward.left {oHoward.x -= 1; oHoward.status = "run"; oHoward.spr = sHoward_run;}
+        }
+    }
+    if place_meeting(x-2, y, oHoward) &amp;&amp; !place_meeting(x, y-2, oHoward) {
+        if hspeed &lt; 0{
+            if place_free(x - 8,y){
+                oHoward.x -= 1
+            }else{
+                global.hp -= 10; // ow
+                dir = 1
+            }
+        }else{
+            if oHoward.right {oHoward.x += 1 oHoward.status = "run"; oHoward.spr = sHoward_run;}
+        }
+    }    
 }
 </string>
           </argument>

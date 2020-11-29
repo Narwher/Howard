@@ -26,9 +26,8 @@
           <argument>
             <kind>1</kind>
             <string>/// Title screen (and global reset)
-score = 0
+score = 0;
 
-global.lvl = 1
 global.joystick = false;
 global.touch = false;
 
@@ -61,7 +60,7 @@ alarm[0] = 5;
     
     global.joykeys = true;
     global.touch = false;
-}else if mouse_check_button(mb_left){
+}else if mouse_check_button(mb_left){ //&amp;&amp; (os_type == os_android || os_type == os_ios){
     room_goto(rm_1);
     mouse_clear(mb_left);
     

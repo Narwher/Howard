@@ -6,7 +6,7 @@
   <depth>-1</depth>
   <persistent>0</persistent>
   <parentName>oEnemy</parentName>
-  <maskName>&lt;undefined&gt;</maskName>
+  <maskName>sBig_mask</maskName>
   <events>
     <event eventtype="0" enumb="0">
       <action>
@@ -116,8 +116,10 @@ alarm[1] = 40;
           <argument>
             <kind>1</kind>
             <string>/// Delayed gravity
-if place_free(x,y+1){
-    y += 2;
+if global.gameMove{
+    if place_free(x,y+1){
+        y += 2;
+    }
 }
 
 alarm[0] = 2;
@@ -144,11 +146,13 @@ alarm[0] = 2;
           <argument>
             <kind>1</kind>
             <string>/// Detect Howard
-if ((bbox_right &gt; view_xview[0]+40) &amp;&amp; (bbox_left &lt; view_xview[0] + view_wview[0]-40) &amp;&amp; y == oHoward.y) &amp;&amp;
-!collision_line(x,y,oHoward.x,oHoward.y,oBlock,true,false){
-    state = "attack"; 
-}else{
-    state = "wander";
+if global.gameMove{
+    if ((bbox_right &gt; view_xview[global.myView]+40) &amp;&amp; (bbox_left &lt; view_xview[global.myView] + view_wview[global.myView]-40) &amp;&amp; y == oHoward.y) &amp;&amp;
+    !collision_line(x,y,oHoward.x,oHoward.y,oBlock,true,false){
+        state = "attack"; 
+    }else{
+        state = "wander";
+    }
 }
 </string>
           </argument>
@@ -171,41 +175,47 @@ if ((bbox_right &gt; view_xview[0]+40) &amp;&amp; (bbox_left &lt; view_xview[0] 
           <argument>
             <kind>1</kind>
             <string>/// Movement
-if state == "wander"{
-    if dir == -1{
-        if place_empty(x - 1, y) and !place_empty(x,y+1){
-            i = 0
-            if i &lt; xTo hspeed = -1;
+if global.gameMove{
+    if state == "wander"{
+        if dir == -1{
+            if place_empty(x - 1, y) and !place_empty(x,y+1){
+                i = 0
+                if i &lt; xTo hspeed = -1;
+            }else{
+                hspeed = 0;
+            }
+        }else if dir == 1{
+            if place_empty(x + 1, y) and !place_empty(x,y+1){
+                i = 0
+                if i &lt; xTo hspeed = 1;
+            }else{
+                hspeed = 0;
+            }
+        }else{
+            x = xprevious;
+            hspeed = 0;
+        }
+    }else if state == "attack"{
+        if oHoward.x &gt; x{
+            if place_free(x+1,y){
+                hspeed = 1.75;            
+            }else{
+                hspeed = 0;
+            }
+        }else if oHoward.x &lt; x{
+            if place_free(x-1,y){
+                hspeed = -1.75;
+            }else{
+                hspeed = 0;
+            }
         }else{
             hspeed = 0;
         }
-    }else if dir == 1{
-        if place_empty(x + 1, y) and !place_empty(x,y+1){
-            i = 0
-            if i &lt; xTo hspeed = 1;
-        }else{
-            hspeed = 0;
-        }
-    }else{
-        x = xprevious;
-        hspeed = 0;
     }
-}else if state == "attack"{
-    if oHoward.x &gt; x{
-        if place_empty(x+1,y){
-            hspeed = 1.25;            
-        }else{
-            hspeed = 0;
-        }
-    }else if oHoward.x &lt; x{
-        if place_empty(x-1,y){
-            hspeed = -1.25;
-        }else{
-            hspeed = 0;
-        }
-    }else{
-        hspeed = 0;
-    }
+}else{
+    hspeed = 0;
+    x = xprevious;
+    y = yprevious;
 }
 </string>
           </argument>
@@ -228,8 +238,14 @@ if state == "wander"{
           <argument>
             <kind>1</kind>
             <string>/// Player collision
-if !place_meeting(x,y,oHoward) &amp;&amp; place_meeting(x,y-2,oHoward){
-    oHoward.x += hspeed;
+if global.gameMove{
+    if !place_meeting(x,y,oHoward) &amp;&amp; place_meeting(x,y-2,oHoward){
+        if (hspeed &gt; 0) &amp;&amp; place_free(x+4,y-8){
+            oHoward.x += hspeed;
+        }else if (hspeed &lt; 0) &amp;&amp; place_free(x-4,y-8){
+            oHoward.x += hspeed;      
+        } 
+    }  
 }
 </string>
           </argument>
@@ -277,10 +293,12 @@ if hp &lt;= 0 {
           <argument>
             <kind>1</kind>
             <string>/// If not injured, make it normal colored (not red)
-with oHoward{
-     if !shoot{
-      image_blend = c_white;
-     }
+if global.gameMove{
+    with oHoward{
+         if !shoot{
+          image_blend = c_white;
+         }
+    }
 }
 </string>
           </argument>
@@ -303,21 +321,22 @@ with oHoward{
           <argument>
             <kind>1</kind>
             <string>/// Collision with world objects
-
-if place_meeting(x,y+1,oConveyorLeft){
-    x -= 1;
-}
-
-if place_meeting(x,y+1,oConveyorRight){
-    x += 1;
-}
-
-if place_meeting(x,y+1,oLava){
-    hp -= .15;
-    image_blend = choose(c_red, c_white);
-}else{
-    if !oHoward.shoot{
-        image_blend = c_white;
+if global.gameMove{
+    if place_meeting(x,y+1,oConveyorLeft){
+        x -= 1;
+    }
+    
+    if place_meeting(x,y+1,oConveyorRight){
+        x += 1;
+    }
+    
+    if place_meeting(x,y+1,oLava){
+        hp -= .15;
+        image_blend = choose(c_red, c_white);
+    }else{
+        if !oHoward.shoot{
+            image_blend = c_white;
+        }
     }
 }
 </string>
@@ -376,13 +395,17 @@ draw_sprite_ext(sImp,image_index,x,y,scale_x, 1, image_angle, image_blend, image
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Draw state (debug)
+            <string>/// debug
 
 if global.debug{
     draw_set_font(fnt_system);
     draw_set_color(c_white);
     draw_text(x,y - 24, state)
+    
+    draw_sprite_ext(mask_index,0,x,y,1,1,0,c_aqua,0.5);
 }
+
+
 </string>
           </argument>
         </arguments>
