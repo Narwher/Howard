@@ -3,7 +3,7 @@
   <spriteName>sNPC</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>-1</depth>
+  <depth>-3</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -326,7 +326,7 @@ draw_sprite_ext(sNPC,image_index,x,y,scale_x, 1, image_angle, image_blend, image
           <argument>
             <kind>1</kind>
             <string>/// Draw chatter
-draw_set_color(c_yellow);
+draw_set_color(c_fuchsia);
 draw_set_font(fnt_system);
 draw_set_halign(fa_middle);
 draw_text(x,y-24,talk);

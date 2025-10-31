@@ -27,7 +27,7 @@
             <kind>1</kind>
             <string>/// Automatically progresses logo screen to title screen
 alarm[0] = 10;
-sound_play(snd_ohyeah);
+audio_play_sound(snd_ohyeah,1,0);
 
 </string>
           </argument>
@@ -51,11 +51,11 @@ sound_play(snd_ohyeah);
             <kind>1</kind>
             <string>/// change viewport
 if (os_type == os_android || os_type == os_ios){
-    global.myView = 1;
+    global.myView = 0;
     view_visible[global.myView] = true;
     view_enabled = true;
 }else{
-    global.myView = 1;
+    global.myView = 0;
     view_visible[global.myView] = true;
     view_enabled = true;
 }

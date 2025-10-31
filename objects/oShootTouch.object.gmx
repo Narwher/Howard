@@ -8,6 +8,99 @@
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
   <events>
+    <event eventtype="0" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>_max_devices = 3;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="3" enumb="2">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>x = view_xview[global.myView] + 224 
+y = view_yview[global.myView] + 96
+
+// Loop through 3 touches
+//for (var i = 0; i &lt; _max_devices; i++) {
+    if global.touch{
+        if device_mouse_check_button(i, mb_left) &amp;&amp; point_in_circle(device_mouse_x(i),device_mouse_y(i), x, y,8){
+            keyboard_key_press(vk_space);
+        }else{
+            keyboard_key_release(vk_space);
+        }
+    }
+//}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="3" enumb="1">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>x = view_xview[global.myView] + 224 
+y = view_yview[global.myView] + 96
+
+// Loop through 3 touches
+//for (var i = 0; i &lt; _max_devices; i++) {
+    if global.touch{
+        if device_mouse_check_button(i, mb_left) &amp;&amp; point_in_circle(device_mouse_x(i),device_mouse_y(i), x, y,8){
+            keyboard_key_press(vk_space);
+        }else{
+            keyboard_key_release(vk_space);
+        }
+    }
+//}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="3" enumb="0">
       <action>
         <libid>1</libid>
@@ -25,15 +118,25 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Update position
-//x = view_xview[global.myView] + 208;
-//y = view_yview[global.myView] + 90;
+            <string>x = view_xview[global.myView] + 224 
+y = view_yview[global.myView] + 96
+
+// Loop through 3 touches
+//for (var i = 0; i &lt; _max_devices; i++) {
+    if global.touch{
+        if device_mouse_check_button(i, mb_left) &amp;&amp; point_in_circle(device_mouse_x(i),device_mouse_y(i), x, y,8){
+            keyboard_key_press(vk_space);
+        }else{
+            keyboard_key_release(vk_space);
+        }
+    }
+//}
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="64">
+    <event eventtype="8" enumb="0">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -50,9 +153,9 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>wx =window_get_x()
-wy =window_get_y()
-draw_sprite_ext(sShootTouch, image_index, wx+416, wy+180, 2, 2,image_angle,image_blend,image_alpha)
+            <string>
+draw_sprite_ext(sShootTouch, image_index, view_xview[global.myView] + 224 ,view_yview[global.myView] + 96 , 1, 1,image_angle,image_blend,image_alpha)
+
 </string>
           </argument>
         </arguments>

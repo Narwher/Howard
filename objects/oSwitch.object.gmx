@@ -58,8 +58,8 @@ if place_meeting(x,y,oHoward){
     
     if !touched{
         touched = true;
-        if state == 0 {state = 1;}
-        else if state == 1 {state = 0;}   
+        if state == 0 {if !audio_is_playing(snd_switch1){audio_play_sound(snd_switch1,1,0);}state = 1;}
+        else if state == 1 {if !audio_is_playing(snd_switch2){audio_play_sound(snd_switch2,1,0)}state = 0;}   
         
         with oSwitchBlock {event_user(0);};  
     }

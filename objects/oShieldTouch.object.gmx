@@ -40,7 +40,7 @@ if global.hp &lt; 20{
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="64">
+    <event eventtype="8" enumb="0">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -57,7 +57,8 @@ if global.hp &lt; 20{
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>draw_sprite_ext(sShieldTouch, image_index, 352, 180, 2, 2,image_angle,image_blend,image_alpha)
+            <string>draw_sprite_ext(sShieldTouch, image_index, view_xview[global.myView] + 178, view_yview[global.myView] + 96, 1, 1,image_angle,image_blend,image_alpha)
+
 </string>
           </argument>
         </arguments>

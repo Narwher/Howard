@@ -3,7 +3,7 @@
   <Configs name="configs">
     <Config>Configs\Default</Config>
   </Configs>
-  <datafiles number="2" name="datafiles">
+  <datafiles number="3" name="datafiles">
     <datafile>
       <name>howard.ico</name>
       <exists>-1</exists>
@@ -21,17 +21,59 @@
       </ConfigOptions>
       <filename>howard.ico</filename>
     </datafile>
+    <datafile>
+      <name>Google Chrome.lnk</name>
+      <exists>-1</exists>
+      <size>2214</size>
+      <exportAction>2</exportAction>
+      <exportDir></exportDir>
+      <overwrite>0</overwrite>
+      <freeData>-1</freeData>
+      <removeEnd>0</removeEnd>
+      <store>0</store>
+      <ConfigOptions>
+        <Config name="Default">
+          <CopyToMask>9223372036854775807</CopyToMask>
+        </Config>
+      </ConfigOptions>
+      <filename>Google Chrome.lnk</filename>
+    </datafile>
   </datafiles>
   <NewExtensions/>
   <sounds name="sound">
+    <sounds name="bgm">
+      <sound>sound\bgm_moonlight</sound>
+      <sound>sound\bgm_arcton</sound>
+      <sound>sound\bgm_egypt1</sound>
+      <sound>sound\bgm_boss</sound>
+      <sound>sound\bgm_delta</sound>
+      <sound>sound\bgm_gigerus</sound>
+      <sound>sound\bgm_egypt2</sound>
+      <sound>sound\bgm_hades</sound>
+      <sound>sound\bgm_hive</sound>
+      <sound>sound\bgm_quar</sound>
+      <sound>sound\bgm_terra</sound>
+      <sound>sound\bgm_howard</sound>
+      <sound>sound\bgm_xoton</sound>
+      <sound>sound\bgm_ending</sound>
+    </sounds>
     <sound>sound\snd_ohyeah</sound>
-    <sound>sound\snd_music</sound>
-    <sound>sound\snd_gameover</sound>
     <sound>sound\snd_tele</sound>
     <sound>sound\snd_tele_long</sound>
     <sound>sound\snd_pause</sound>
     <sound>sound\snd_unpause</sound>
     <sound>sound\snd_aah</sound>
+    <sound>sound\snd_shoot</sound>
+    <sound>sound\snd_flak2</sound>
+    <sound>sound\snd_flak</sound>
+    <sound>sound\snd_enemy_shoot</sound>
+    <sound>sound\snd_pup</sound>
+    <sound>sound\snd_pickup</sound>
+    <sound>sound\snd_elec</sound>
+    <sound>sound\snd_bullet</sound>
+    <sound>sound\snd_switch1</sound>
+    <sound>sound\snd_switch2</sound>
+    <sound>sound\snd_tada</sound>
   </sounds>
   <sprites name="sprites">
     <sprites name="Howard">
@@ -47,6 +89,7 @@
     <sprites name="Blocks">
       <sprite>sprites\sBlock</sprite>
       <sprite>sprites\sBlock2</sprite>
+      <sprite>sprites\sBlock4</sprite>
       <sprite>sprites\sBlock3</sprite>
       <sprite>sprites\sSmallBlock</sprite>
       <sprite>sprites\sBreak</sprite>
@@ -60,7 +103,8 @@
       <sprite>sprites\sWater</sprite>
       <sprite>sprites\sBigWater</sprite>
       <sprite>sprites\sSwitchBlock</sprite>
-      <sprite>sprites\spr_ice</sprite>
+      <sprite>sprites\sIce</sprite>
+      <sprite>sprites\sRust</sprite>
     </sprites>
     <sprites name="System">
       <sprite>sprites\sName</sprite>
@@ -100,6 +144,8 @@
     <sprite>sprites\sLazerVert</sprite>
     <sprite>sprites\sLazerHor</sprite>
     <sprite>sprites\sVortex</sprite>
+    <sprite>sprites\sGhoul</sprite>
+    <sprite>sprites\sContinue</sprite>
   </sprites>
   <backgrounds name="background">
     <background>background\bg_logo</background>
@@ -120,11 +166,14 @@
     <script>scripts\instance_nth_nearest.gml</script>
     <script>scripts\clamp_wrap.gml</script>
     <script>scripts\scale_canvas.gml</script>
+    <script>scripts\collision_rectangle_list.gml</script>
   </scripts>
   <fonts name="fonts">
     <font>fonts\fnt_system</font>
+    <font>fonts\fnt_debug</font>
   </fonts>
   <objects name="objects">
+    <object>objects\oHoward</object>
     <objects name="System">
       <object>objects\oLogo</object>
       <object>objects\oTitle</object>
@@ -132,9 +181,9 @@
       <object>objects\oHud</object>
       <object>objects\oEnemy</object>
       <object>objects\oTarget</object>
+      <object>objects\oShootaway_par</object>
       <object>objects\oHoward_fake</object>
       <object>objects\oHoward_die</object>
-      <object>objects\oNext</object>
       <objects name="Touch">
         <object>objects\oAnalog</object>
         <object>objects\oAnalogBack</object>
@@ -143,48 +192,63 @@
         <object>objects\oShrinkTouch</object>
       </objects>
       <object>objects\oBullet</object>
-      <object>objects\oZap</object>
       <object>objects\oExplode</object>
       <object>objects\oTransportEvent</object>
       <object>objects\oScriptedTransport</object>
       <object>objects\oResize</object>
+      <object>objects\oEvilHowardDie</object>
+      <object>objects\oBlockedBlock</object>
+      <object>objects\oEvilHoward</object>
+      <object>objects\oHplat_old</object>
     </objects>
-    <object>objects\oHoward</object>
-    <object>objects\oSmiley</object>
-    <object>objects\oImp</object>
-    <object>objects\oTrooper</object>
-    <object>objects\oBirb</object>
-    <object>objects\oEvilHoward</object>
-    <object>objects\oEvilHowardDie</object>
-    <object>objects\oMine</object>
-    <object>objects\oTurret</object>
-    <object>objects\oVortex</object>
-    <object>objects\oElecFence</object>
-    <object>objects\oNPC</object>
-    <object>objects\oSign</object>
-    <object>objects\oBlock</object>
-    <object>objects\oBlock2</object>
-    <object>objects\oBlock3</object>
-    <object>objects\oBreak</object>
-    <object>objects\oShootAway</object>
-    <object>objects\oInvisiblock</object>
-    <object>objects\oPush</object>
-    <object>objects\oConveyorLeft</object>
-    <object>objects\oConveyorRight</object>
-    <object>objects\oHplat</object>
-    <object>objects\oVplat</object>
-    <object>objects\oShrink</object>
-    <object>objects\oJump</object>
-    <object>objects\oMcChicken</object>
-    <object>objects\oLava</object>
-    <object>objects\oWater</object>
-    <object>objects\oBigWater</object>
-    <object>objects\oSwitchBlock</object>
-    <object>objects\oSwitch</object>
-    <object>objects\oIce</object>
-    <object>objects\oTele</object>
-    <object>objects\oLazerVert</object>
-    <object>objects\oLazerHor</object>
+    <objects name="Blocks">
+      <object>objects\oBlock</object>
+      <object>objects\oBlock2</object>
+      <object>objects\oBlock3</object>
+      <object>objects\oBlock4</object>
+    </objects>
+    <objects name="Interactables">
+      <object>objects\oNPC</object>
+      <object>objects\oSign</object>
+    </objects>
+    <objects name="Enemies/Hazards">
+      <object>objects\oSmiley</object>
+      <object>objects\oImp</object>
+      <object>objects\oElecFence</object>
+      <object>objects\oTrooper</object>
+      <object>objects\oBirb</object>
+      <object>objects\oGhoul</object>
+      <object>objects\oMine</object>
+      <object>objects\oTurret</object>
+      <object>objects\oVortex</object>
+      <object>objects\oLava</object>
+      <object>objects\oLazerVert</object>
+      <object>objects\oLazerHor</object>
+    </objects>
+    <objects name="Pickups">
+      <object>objects\oMcChicken</object>
+      <object>objects\oShrink</object>
+      <object>objects\oJump</object>
+      <object>objects\oContinue</object>
+    </objects>
+    <objects name="Doodads">
+      <object>objects\oNext</object>
+      <object>objects\oVplat</object>
+      <object>objects\oHplat</object>
+      <object>objects\oWater</object>
+      <object>objects\oBigWater</object>
+      <object>objects\oSwitch</object>
+      <object>objects\oIce</object>
+      <object>objects\oSwitchBlock</object>
+      <object>objects\oTele</object>
+      <object>objects\oRust</object>
+      <object>objects\oBreak</object>
+      <object>objects\oConveyorLeft</object>
+      <object>objects\oConveyorRight</object>
+      <object>objects\oInvisiblock</object>
+      <object>objects\oShootAway</object>
+      <object>objects\oPush</object>
+    </objects>
   </objects>
   <rooms name="rooms">
     <rooms name="System">
@@ -196,6 +260,10 @@
       <room>rooms\rm_win3</room>
       <room>rooms\rm_win4</room>
       <room>rooms\rm_win5</room>
+      <room>rooms\rm_win6</room>
+      <room>rooms\rm_win7</room>
+      <room>rooms\rm_win8</room>
+      <room>rooms\rm_end</room>
     </rooms>
     <room>rooms\rm_1</room>
     <room>rooms\rm_2</room>
@@ -205,6 +273,8 @@
     <room>rooms\rm_6</room>
     <room>rooms\rm_7</room>
     <room>rooms\rm_8</room>
+    <room>rooms\rm_9</room>
+    <room>rooms\rm_10</room>
     <room>rooms\rm_boss</room>
   </rooms>
   <help>

@@ -33,6 +33,30 @@ hp = 50;
           </argument>
         </arguments>
       </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// X and Y origin offsets
+// distance to origin
+x_offset = 0;
+y_offset = 0;
+</string>
+          </argument>
+        </arguments>
+      </action>
     </event>
     <event eventtype="1" enumb="0">
       <action>
@@ -54,6 +78,7 @@ hp = 50;
             <string>// Give health
 score += 50; //and score..?
 global.hp += 15;
+audio_play_sound(snd_pup,1,0);
 </string>
           </argument>
         </arguments>

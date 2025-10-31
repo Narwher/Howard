@@ -3,7 +3,7 @@
   <spriteName>sLazerVert</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>0</depth>
+  <depth>-1</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -122,7 +122,7 @@ if global.gameMove &amp;&amp; instance_exists(oHoward){
           oHoward.status_blend = "hurt";
        }else{
           global.shp = global.shp - damage;
-          global.hp = global.hp - 0.10;
+          //global.hp = global.hp - 0.7;
        }
     }else{
        if !oHoward.shieldOn{

@@ -5,7 +5,7 @@
   <visible>-1</visible>
   <depth>-1</depth>
   <persistent>0</persistent>
-  <parentName>oTarget</parentName>
+  <parentName>oEnemy</parentName>
   <maskName>s16mask</maskName>
   <events>
     <event eventtype="0" enumb="0">
@@ -48,10 +48,34 @@
             <string>///Variables and shit
 event_inherited();
 
-hp = 40;
+hp = 30;
 damage = 1.25;
 
 image_speed = .5
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// X and Y origin offsets
+// distance to origin
+x_offset = 0;
+y_offset = 0;
 </string>
           </argument>
         </arguments>
@@ -146,32 +170,7 @@ if global.gameMove{
         </arguments>
       </action>
     </event>
-    <event eventtype="4" ename="oMcChicken">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>///Lazy collision code here
-x = xprevious;   
-y = yprevious;
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="4" ename="oVplat">
+    <event eventtype="4" ename="oBreak">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -221,7 +220,7 @@ y = yprevious;
         </arguments>
       </action>
     </event>
-    <event eventtype="4" ename="oBreak">
+    <event eventtype="4" ename="oVplat">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -246,7 +245,82 @@ y = yprevious;
         </arguments>
       </action>
     </event>
-    <event eventtype="4" ename="oBlock">
+    <event eventtype="4" ename="oMcChicken">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Lazy collision code here
+x = xprevious;   
+y = yprevious;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="4" ename="oMine">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Lazy collision code here
+x = xprevious;   
+y = yprevious;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="4" ename="oBirb">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Lazy collision code here
+x = xprevious;   
+y = yprevious;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="4" ename="oElecFence">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -316,6 +390,38 @@ y = yprevious;
             <string>///Lazy collision code here
 x = xprevious;   
 y = yprevious;
+//x -= dcos(point_direction(x, y, other.x, other.y))
+//y += dsin(point_direction(x, y, other.x, other.y))
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="4" ename="oBlock">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Lazy collision code here
+
+//x -= dcos(point_direction(x, y, other.x, other.y))
+//y += dsin(point_direction(x, y, other.x, other.y))
+x = xprevious;   
+y = yprevious;
+
 </string>
           </argument>
         </arguments>
@@ -342,7 +448,10 @@ y = yprevious;
 
 if global.debug{
     draw_sprite_ext(mask_index,0,x,y,1,1,0,c_aqua,0.5);
+    draw_text(x,y-16, string(hp));
 }
+
+
 </string>
           </argument>
         </arguments>

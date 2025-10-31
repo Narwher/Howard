@@ -58,6 +58,30 @@ alarm[0] = 1
           </argument>
         </arguments>
       </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// X and Y origin offsets
+// distance to origin
+x_offset = 0;
+y_offset = 0;
+</string>
+          </argument>
+        </arguments>
+      </action>
     </event>
     <event eventtype="2" enumb="0">
       <action>
@@ -76,14 +100,15 @@ alarm[0] = 1
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if state == "out"{
+            <string>/// states
+if state == "out"{
     path_start(pBirb2, 2, path_action_continue, false);
 }else if state == "wander"{
     path_start(pBirb, 2, path_action_continue, false);
 }else if state == "attack"{
     path_end();
 }
-alarm[0] = 100;
+alarm[0] = 20;
 </string>
           </argument>
         </arguments>
@@ -180,8 +205,36 @@ if global.gameMove{
           </argument>
         </arguments>
       </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// check pause
+if global.gameMove{
+    image_speed = .15
+    path_speed = 2;
+}else{
+    image_speed = 0;
+    path_speed = 0  
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
     </event>
-    <event eventtype="4" ename="oMcChicken">
+    <event eventtype="4" ename="oBreak">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -206,7 +259,7 @@ y = yprevious;
         </arguments>
       </action>
     </event>
-    <event eventtype="4" ename="oVplat">
+    <event eventtype="4" ename="oWater">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -256,7 +309,7 @@ y = yprevious;
         </arguments>
       </action>
     </event>
-    <event eventtype="4" ename="oBreak">
+    <event eventtype="4" ename="oVplat">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -281,7 +334,7 @@ y = yprevious;
         </arguments>
       </action>
     </event>
-    <event eventtype="4" ename="oBlock">
+    <event eventtype="4" ename="oMcChicken">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -381,6 +434,31 @@ y = yprevious;
         </arguments>
       </action>
     </event>
+    <event eventtype="4" ename="oBlock">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Lazy collision code here
+x = xprevious;   
+y = yprevious;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="8" enumb="0">
       <action>
         <libid>1</libid>
@@ -398,10 +476,14 @@ y = yprevious;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if hspeed &gt; 0{
-    draw_sprite_ext(sBirb,image_index,x,y,1,1,image_angle,image_blend,image_alpha);
+            <string>if instance_exists (oHoward){
+    if oHoward.x &gt; x{
+        draw_sprite_ext(sBirb,image_index,x,y,1,1,image_angle,image_blend,image_alpha);
+    }else{
+        draw_sprite_ext(sBirb,image_index,x,y,-1,1,image_angle,image_blend,image_alpha);
+    }
 }else{
-    draw_sprite_ext(sBirb,image_index,x,y,-1,1,image_angle,image_blend,image_alpha);
+    draw_sprite_ext(sBirb,image_index,x,y,1,1,image_angle,image_blend,image_alpha);
 }
 
 if global.debug{

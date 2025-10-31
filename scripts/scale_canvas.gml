@@ -25,6 +25,6 @@ if (_center)
     window_center();
     }
 
-view_wport[0] = min(window_get_width(), _bw);
-view_hport[0] = min(window_get_height(), _bh)
-surface_resize(application_surface, view_wport[0], view_hport[0]);
+view_wport[global.myView] = min(window_get_width(), _bw);
+view_hport[global.myView] = min(window_get_height(), _bh)
+surface_resize(application_surface, view_wport[global.myView], view_hport[global.myView]);

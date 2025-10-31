@@ -27,7 +27,8 @@
             <kind>1</kind>
             <string>/// Like an enemy, but not
 hp = 10;
-
+damage = .45
+shocking = "off";
 image_speed = .15;
 </string>
           </argument>
@@ -49,34 +50,10 @@ image_speed = .15;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// create zaps
-myZap1 = instance_create(x-16,y,oZap);
-myZap2 = instance_create(x+16,y,oZap);
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="1" enumb="0">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/// destroy zaps
-with myZap1 instance_destroy();
-with myZap2 instance_destroy();
+            <string>/// X and Y origin offsets
+// distance to origin
+x_offset = 4;
+y_offset = 4;
 </string>
           </argument>
         </arguments>
@@ -104,6 +81,31 @@ if global.gameMove{
     image_speed = 0.15;
 }else{
     image_speed = 0;
+}
+
+/// Meet Howard
+if global.gameMove{
+    if collision_rectangle(x-24,y-4,x,y+4,oHoward,false,false){
+        shocking =  "left";
+        if !audio_is_playing(snd_elec){ audio_play_sound(snd_elec,1,0);}
+        if !oHoward.shieldOn{
+            global.hp = global.hp - damage;
+       }else{
+            global.shp = global.shp - damage;
+            //global.hp = global.hp - 0.10;
+       }
+    }else if collision_rectangle(x,y-4,x + 32,y+4,oHoward,false,false){
+        shocking = "right";
+        if !audio_is_playing(snd_elec){ audio_play_sound(snd_elec,1,0);}
+        if !oHoward.shieldOn{
+            global.hp = global.hp - damage;
+       }else{
+            global.shp = global.shp - damage;
+            //global.hp = global.hp - 0.10;
+       }
+    }else{
+        shocking = "off";
+    }
 }
 </string>
           </argument>
@@ -152,6 +154,15 @@ if hp &lt;= 0 {
           <argument>
             <kind>1</kind>
             <string>/// Draw Stuff
+
+//zaps
+if shocking == "left"{
+    draw_sprite_ext(sZap,image_index,x - 16,y, -1,1,image_angle,image_blend,image_alpha);
+}else if shocking == "right"{
+    draw_sprite(sZap, image_index,x + 24,y);
+}else{
+
+}
 
 // draw self
 draw_sprite(sElecFence,image_index,x,y)

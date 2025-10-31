@@ -3,7 +3,7 @@
   <spriteName>sTele</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>-3</depth>
+  <depth>-4</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -31,6 +31,7 @@ image_speed = 0.25;
 // transportation coordinates (must define in each object's creation code)
 new_x = 0;
 new_y = 0;
+
 </string>
           </argument>
         </arguments>
@@ -56,9 +57,13 @@ new_y = 0;
             <string>/// Howard collision &amp; teleport
 if global.gameMove &amp;&amp; place_meeting(x,y,oHoward){
     if room == rm_4{
-        instance_create(0,0,oScriptedTransport);
-    }else {
-        instance_create(new_x,new_y,oTransportEvent);  
+        if !instance_exists(oScriptedTransport){
+            instance_create(0,0,oScriptedTransport);
+        }
+    }else{
+        if !instance_exists(oTransportEvent){
+            instance_create(new_x,new_y,oTransportEvent);
+        }  
     }
 }
 </string>

@@ -33,7 +33,7 @@ with oHoward{shoot = false;}
 global.gameMove = false;
 
 alarm[0] = 5;
-sound_play(snd_tele_long);
+audio_play_sound(snd_tele_long,1,0);
 
 
 </string>

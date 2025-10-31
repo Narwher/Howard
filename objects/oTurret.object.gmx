@@ -28,10 +28,34 @@
             <string>/// Set up Turret
 timer = choose(30,45,60);
 angle = 0;
-hp = 75;
+hp = 60;
 alarm[0] = timer;
 
 
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// X and Y origin offsets
+// distance to origin
+x_offset = 0;
+y_offset = 0;
 </string>
           </argument>
         </arguments>
@@ -57,9 +81,13 @@ alarm[0] = timer;
             <string>/// Shoot bad bullet
 if global.gameMove{
     if ((bbox_right &gt; view_xview[global.myView]) &amp;&amp; (bbox_left &lt; view_xview[global.myView] + view_wview[global.myView]) &amp;&amp; (bbox_bottom &gt; view_yview[global.myView]) &amp;&amp; (bbox_top &lt; view_yview[global.myView] + view_hview[global.myView])){
-        inst = instance_create(x, y, oBullet);
-        inst.direction = angle;
-        inst.speed = 4;
+        if !collision_line(x,y,oHoward.x,oHoward.y,oBlock,false,false){
+            audio_play_sound(snd_bullet,1,0);
+            
+            inst = instance_create(x, y, oBullet);
+            inst.direction = angle;
+            inst.speed = 4;
+        }
     }
 }
 

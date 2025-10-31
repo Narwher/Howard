@@ -82,7 +82,7 @@ if global.gameMove{
             <kind>1</kind>
             <string>/// draw with scale
 if global.gameMove{
-    if oHoward.x &gt; oElecFence.x{
+    if oHoward.x &gt; x{
         draw_sprite_ext(sZap,image_index,x,y,1,1,image_angle,image_blend,image_alpha);
     }else{
         draw_sprite_ext(sZap,image_index,x,y,-1,1,image_angle,image_blend,image_alpha);

@@ -33,7 +33,7 @@ with oHoward{shoot = false;}
 global.gameMove = false;
 
 alarm[0] = 5;
-sound_play(snd_tele);
+audio_play_sound(snd_tele,1,0);
 
 
 </string>
@@ -60,7 +60,10 @@ sound_play(snd_tele);
             <kind>1</kind>
             <string>/// fade out
 if image_alpha &gt; 0{
-    image_alpha -= .01;
+    image_alpha -= .05;
+    // then activate terrain region
+    instance_activate_region(view_xview[global.myView]-64,view_yview[global.myView]-64,
+    view_wview[global.myView] + 128,view_hview[global.myView] + 128,true);
     alarm[1] = 1;
 }else{
     done = true;
@@ -89,10 +92,16 @@ if image_alpha &gt; 0{
             <kind>1</kind>
             <string>/// fade in
 if image_alpha &lt; 1{
-    image_alpha += .01;
+    image_alpha += .025;
+    // then activate terrain region
+    instance_activate_region(view_xview[global.myView]-64,view_yview[global.myView]-64,
+    view_wview[global.myView] + 128,view_hview[global.myView] + 128,true);
     alarm[0] = 1;
 }else{
     with oHoward {x = oTransportEvent.x; y = oTransportEvent.y;}
+    // then activate terrain region
+    instance_activate_region(view_xview[global.myView]-64,view_yview[global.myView]-64,
+    view_wview[global.myView] + 128,view_hview[global.myView] + 128,true);
     alarm[1] = 10;
 }
 

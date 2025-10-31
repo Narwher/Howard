@@ -39,8 +39,171 @@ if room == rm_5 {
     image_speed = 0;
 }else{
     alpha = 0;
-    image_speed = .15;
+    if global.char == "gumi"{
+        image_speed = .75;
+    }else if global.char == "how" || global.char == "troop"{
+        image_speed = .15;
+    }
 }
+
+cutscene_start = false;
+if global.char == "how"{sprite_index = sHoward_run}else if global.char == "troop" {sprite_index = sTrooper}else if global.char == "gumi" {sprite_index = sNPC}
+
+//credits
+credit = 0;
+credit_y = 190;
+triggerEnd = false;
+if room == rm_end{alarm[7] = 1;}
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="2" enumb="8">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if global.char == "how" global.char = "gumi";
+else if global.char == "gumi" global.char = "troop";
+else if global.char == "troop" global.char = "how";
+room_goto(rm_1);
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="2" enumb="7">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// credit counter
+talk = ""
+credit += 1;
+alarm[2] = 125;
+
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="2" enumb="6">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>instance_change(oHoward,true);
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="2" enumb="5">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>talk = "!!"
+alarm[6] = 50;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="2" enumb="4">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>talk = "?"
+alarm[5] = 100
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="2" enumb="3">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>cutscene_start = true;
+alarm[4] = 100
 </string>
           </argument>
         </arguments>
@@ -63,8 +226,38 @@ if room == rm_5 {
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// winning messages
-talk = choose("Piece of cake!!", "That's it?", "On to the next one!", "Chicken Dinner!!")
+            <string>/// winning messages and credits
+
+if room == rm_end {audio_play_sound(bgm_ending,1,0);}
+
+/*
+if room == rm_end{
+    alarm[7] = 225;
+    if credit == 1{
+        audio_play_sound(bgm_ending,1,0);
+        talk = "Directed by Jay Harris"
+    }else if credit == 2{
+        talk = "Programmed by Jay Harris"
+    }else if credit == 3{
+        talk = "GFX:##Jay Harris##Cave BG: Cave Story##Lava &amp; Mine GFX : Thexder / '95"
+    }else if credit == 4{
+        talk = "Music:##Ending &amp; Level 6 theme##by Jay Harris##All other musics from EVERYWHERE"
+    }else if credit == 5{
+        talk = "SFX: ##Jay Harris##Pause &amp; Transport SFX: Yume Nikki##sfxr by DrPetter"
+    }else if credit == 6{
+        talk = "McChicken is property of ##McDonald's Corporation"
+    }else if credit == 7{
+        talk = "Based on Thexder by Game Arts/Sierra"
+    }else if credit == 8{
+        talk = "And also Metroid by Nintendo (sort of)."
+    }else if credit == 9{
+        talk = "Howard##by LegitVidya 2024## Thanks for playing!!"
+    }
+*/
+if room != rm_end{
+    talk = choose("Piece of cake!!", "That's it?", "On to the next one!", "Chicken Dinner!!")
+}
+
 </string>
           </argument>
         </arguments>
@@ -140,6 +333,7 @@ talk = choose("Piece of cake!!", "That's it?", "On to the next one!", "Chicken D
             <kind>1</kind>
             <string>/// OOB Instance Deactivation 
     // deactivate all instances (except hud &amp; persistent objects)
+if room != rm_end{    
     instance_deactivate_all(true);
     instance_activate_object(oHud);
     instance_activate_object(oAnalog);
@@ -162,7 +356,7 @@ talk = choose("Piece of cake!!", "That's it?", "On to the next one!", "Chicken D
     instance_activate_region(view_xview[global.myView]-32,view_yview[global.myView]-32,
     view_wview[global.myView] + 64,view_hview[global.myView] + 64,true);
 
-
+}
 
 </string>
           </argument>
@@ -212,6 +406,12 @@ view_yview[global.myView] = y - view_hview[global.myView]/2;
 if room != rm_5{
     x = x + 2;
 }
+
+if cutscene_start{
+    x = xprevious
+    sprite_index = sHoward_stand
+    image_speed = 0
+}
 </string>
           </argument>
         </arguments>
@@ -249,8 +449,42 @@ if (room == rm_1) &amp;&amp; x = 448{
     instance_change(oHoward,true);
 }else if (room == rm_8) &amp;&amp; (x == 290){
     instance_change(oHoward,true);
-}else if (room == rm_boss) &amp;&amp; (x == 550){
+}else if (room == rm_9) &amp;&amp; (x == 290){
     instance_change(oHoward,true);
+}else if (room == rm_10) &amp;&amp; (x == 302){
+    instance_change(oHoward,true);
+}else if (room == rm_boss) &amp;&amp; (x == 550) &amp;&amp; !cutscene_start{  
+    alarm[3] = 1;
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if room == rm_end{
+    move_wrap(true,false,16)
+}
+
+if credit == 10{
+    if global.char == "how" global.char = "gumi";
+    else if global.char == "gumi" global.char = "troop";
+    else if global.char == "troop" global.char = "how";
+    room_goto(rm_1);
 }
 </string>
           </argument>
@@ -283,6 +517,31 @@ room_goto(oNext.level);
         </arguments>
       </action>
     </event>
+    <event eventtype="8" enumb="64">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Background stuff
+background_x = x*0.5;
+background_y = y*0.5;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="8" enumb="0">
       <action>
         <libid>1</libid>
@@ -301,12 +560,21 @@ room_goto(oNext.level);
           <argument>
             <kind>1</kind>
             <string>/// draw self and chatter
-draw_sprite(sHoward_run,image_index,x,y);
+draw_sprite(sprite_index,image_index,x,y);
 
 draw_set_color(c_yellow);
 draw_set_font(fnt_system);
 draw_set_halign(fa_middle);
-draw_text(x,y-20,talk);
+
+draw_text(x,y-20,talk);  
+
+// uncomment below if scrolling credits don't work properly
+/*
+if room == rm_end{
+    draw_text(x,y-48,talk);
+}else{
+    draw_text(x,y-20,talk);   
+}
 </string>
           </argument>
         </arguments>
@@ -329,6 +597,78 @@ draw_text(x,y-20,talk);
             <kind>1</kind>
             <string>/// draw white
 draw_sprite_ext(sWhite,0,view_xview[global.myView],view_yview[global.myView],view_wview[global.myView],view_hview[global.myView],image_angle,image_blend,alpha)
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// draw scrolling credits
+if room == rm_end{
+    
+    if (credit_y &gt; -805){
+        credit_y -= 0.125;       
+    }else{
+        credit_y = -806;
+        if !triggerEnd{ triggerEnd = true; alarm[8] = 1285}
+    }
+
+    draw_set_color(c_yellow);
+    draw_set_font(fnt_system);
+    draw_set_halign(fa_middle);
+    
+    draw_text(view_xview+(view_wview/2)-8,credit_y,"
+    
+    Directed by Jay Harris###
+    
+    Programmed by Jay Harris###
+    
+    GFX:##
+    Jay Harris##
+    Cave BG: Cave Story
+    ##Lava &amp; Mine GFX : Thexder / '95###
+    
+    Music:##
+    Euritmix Sux My Dix - Computer Truck##
+    Level 3,5,7,8,9 music - Thexder '95##
+    Level 6 theme by Jay Harris##
+    Ending Theme - Firehawk##
+    All other musics from#various demoscene/trackers###
+    
+    SFX:##
+    Jay Harris##
+    Pause &amp; Transport SFX: Yume Nikki##
+    sfxr by DrPetter###
+    
+    McChicken is property of 
+    ##McDonald's Corporation###
+    
+    Based on Thexder by Game Arts/Sierra###
+    
+    And also Metroid by Nintendo (sort of).####
+    
+    Howard##
+    by LegitVidya 2025##
+    Thanks for playing!!
+    ##
+    
+    ")
+}
+
 </string>
           </argument>
         </arguments>

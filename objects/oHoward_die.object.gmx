@@ -26,37 +26,19 @@
           <argument>
             <kind>1</kind>
             <string>/// variables
-image_speed = 0;
-alarm[3] = 5;
-alarm0_enabled = false;
-alarm1_enabled = false;
+animDone = false;
+done = false;
+image_speed = .175
+
+alarm[0] = 1;
+
+alarm[2] = 125
 
 talk = "";
 
-sound_stop_all();
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="2" enumb="3">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>image_speed = 0.185;
+global.curCont = global.continues;
+
+audio_stop_all();
 </string>
           </argument>
         </arguments>
@@ -65,6 +47,32 @@ sound_stop_all();
     <event eventtype="2" enumb="2">
       <action>
         <libid>1</libid>
+        <id>211</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>1</exetype>
+        <functionname>action_sound</functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>6</kind>
+            <sound>snd_aah</sound>
+          </argument>
+          <argument>
+            <kind>3</kind>
+            <string>0</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="2" enumb="1">
+      <action>
+        <libid>1</libid>
         <id>603</id>
         <kind>7</kind>
         <userelative>0</userelative>
@@ -79,7 +87,19 @@ sound_stop_all();
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>room_goto(rm_gameover);
+            <string>if animDone &amp;&amp; done{
+    if global.continues &gt; 0{
+        global.continues = global.curCont - 1;
+        global.contCount = 0;
+        global.curCont = global.continues;
+        global.curHp = 100;
+        global.hp = 100;
+        room_restart()   
+    }else{
+        room_goto(rm_gameover);
+    }
+}
+
 
 </string>
           </argument>
@@ -104,41 +124,24 @@ sound_stop_all();
           <argument>
             <kind>1</kind>
             <string>/// death talk message
-if !alarm1_enabled {
-    talk = choose("Ow.", "It'll buff out.", "This is your brain on Howard.","Check Please.","Ow.","Could I get a broom?","Ouch.");
-    alarm1_enabled = true;
-    alarm[2] = 150;
+if animDone &amp;&amp; !done{
+    if global.continues &lt; 1{
+        talk = choose("Ow.", "It'll buff out.", "This is your brain on Howard.","Check Please.","Ow.","Could I get a broom?","Ouch.");
+        if !audio_is_playing(bgm_moonlight) {audio_play_sound(bgm_moonlight,1,0);}
+    }else{
+        talk = choose("Let's try that again!", "Another go, eh?", "I'll bounce back.", "Bring it on!!", "&lt;Tape rewinding noises&gt;", "How about another try?", "I think I can!", "Let's give it a retry!");   
+    }
+    done = true;
+    alarm[1] = 150;
 }
+
+alarm[0] = 100;
 </string>
           </argument>
         </arguments>
       </action>
-      <action>
-        <libid>1</libid>
-        <id>211</id>
-        <kind>0</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>0</useapplyto>
-        <exetype>1</exetype>
-        <functionname>action_sound</functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>6</kind>
-            <sound>snd_gameover</sound>
-          </argument>
-          <argument>
-            <kind>3</kind>
-            <string>0</string>
-          </argument>
-        </arguments>
-      </action>
     </event>
-    <event eventtype="7" enumb="7">
+    <event eventtype="3" enumb="0">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -155,14 +158,11 @@ if !alarm1_enabled {
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if !alarm0_enabled {
-    alarm0_enabled = true;
-    image_speed = 0;
-    image_index = image_number -1
-    alarm[0] = 100;
+            <string>if (image_index &gt; image_number - 2) {
+    animDone = true;
+    image_speed = 0
+    image_index = image_number - 1
 }
-
-
 </string>
           </argument>
         </arguments>

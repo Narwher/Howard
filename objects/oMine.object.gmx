@@ -29,7 +29,7 @@
 event_inherited();
 
 hp = 10;
-damage = 15;
+damage = 20;
 
 image_speed = .10;
 
@@ -38,29 +38,75 @@ exploded = false; // mine has not been triggered
           </argument>
         </arguments>
       </action>
-    </event>
-    <event eventtype="2" enumb="0">
       <action>
         <libid>1</libid>
-        <id>202</id>
-        <kind>0</kind>
+        <id>603</id>
+        <kind>7</kind>
         <userelative>0</userelative>
         <isquestion>0</isquestion>
         <useapplyto>-1</useapplyto>
-        <exetype>1</exetype>
-        <functionname>action_change_object</functionname>
+        <exetype>2</exetype>
+        <functionname></functionname>
         <codestring></codestring>
         <whoName>self</whoName>
         <relative>0</relative>
         <isnot>0</isnot>
         <arguments>
           <argument>
-            <kind>10</kind>
-            <object>oExplode</object>
+            <kind>1</kind>
+            <string>/// X and Y origin offsets
+// distance to origin
+x_offset = 6;
+y_offset = 6;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="2" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>211</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>1</exetype>
+        <functionname>action_sound</functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>6</kind>
+            <sound>snd_flak</sound>
           </argument>
           <argument>
-            <kind>4</kind>
+            <kind>3</kind>
             <string>0</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>instance_create(x,y, oExplode)
+instance_destroy()
+</string>
           </argument>
         </arguments>
       </action>
@@ -134,10 +180,10 @@ if hp &lt;= 0 {
             <kind>1</kind>
             <string>/// Gravity
 if global.gameMove{
-    if bbox_right &gt; view_xview[global.myView]
+    if (bbox_right &gt; view_xview[global.myView]
     &amp;&amp; bbox_left &lt; view_xview[global.myView] + view_wview[global.myView]
     &amp;&amp; bbox_bottom &gt; view_yview[global.myView]
-    &amp;&amp; bbox_top &lt; view_yview[global.myView] + view_hview[global.myView]{
+    &amp;&amp; bbox_top &lt; view_yview[global.myView] + view_hview[global.myView]){
         if place_empty(x,y + 2){
             y += 2;
         }else{

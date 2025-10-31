@@ -115,7 +115,7 @@ if global.gameMove{
 draw_sprite(sSign,0,x,y);
 
 // draw chatter
-draw_set_color(c_yellow);
+draw_set_color(c_fuchsia);
 draw_set_font(fnt_system);
 draw_set_halign(fa_middle);
 draw_text(x,y-24,talk);

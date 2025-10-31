@@ -28,8 +28,15 @@
             <string>/// Title screen (and global reset)
 score = 0;
 
+global.curVersion = "0.1a";
 global.joystick = false;
 global.touch = false;
+
+global.continues = 0;
+global.curHp = 100;
+global.curCont = 0;
+global.contCount = 0; // 3 to get a continue
+global.char = "how"; // "how" - howard, "troop" - alien trooper, "gumi" - drawoh NPC
 
 alarm[0] = 5;
 </string>
@@ -60,13 +67,38 @@ alarm[0] = 5;
     
     global.joykeys = true;
     global.touch = false;
-}else if mouse_check_button(mb_left){ //&amp;&amp; (os_type == os_android || os_type == os_ios){
+}else if mouse_check_button(mb_left) &amp;&amp; (os_type == os_android || os_type == os_ios){
     room_goto(rm_1);
     mouse_clear(mb_left);
     
     global.joykeys = false;
     global.touch = true;
 }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="64">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>draw_set_font(fnt_debug);
+draw_set_color(c_black);
+draw_text(289,525, "version " + global.curVersion);
 </string>
           </argument>
         </arguments>

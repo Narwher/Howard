@@ -53,8 +53,39 @@ damage = 1.25;
 path_start(pEvilHoward, 2, path_action_continue, true);
 image_speed = .15
 
+alarm[0] = 1 // shoot check
+state = "attack"
+state2 = "wait"
+isShooting = false;
+
 spr = sHoward_jet
 
+global.endgame = false;
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// X and Y origin offsets
+// distance to origin
+x_offset = 0;
+y_offset = 0;
 </string>
           </argument>
         </arguments>
@@ -90,6 +121,40 @@ spr = sHoward_jet
         </arguments>
       </action>
     </event>
+    <event eventtype="2" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// shoot
+if state == "attack"{
+    if state2 == "wait"{
+        state2 = "shoot"
+    }else if state2 == "shoot"{
+        state2 = "wait"
+    }
+}else{
+    state2 = "wait"
+}
+alarm[0] = 15;
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="3" enumb="0">
       <action>
         <libid>1</libid>
@@ -109,12 +174,153 @@ spr = sHoward_jet
             <kind>1</kind>
             <string>/// Dai 
 if hp &lt;= 0{
-    sound_stop_all();
+    audio_stop_all();
     instance_destroy();
 }
 
 if hp &lt; 400{
     path_speed = -2
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Detect Howard
+if global.gameMove{
+    if ((bbox_right &gt; view_xview[global.myView]+40) &amp;&amp; (bbox_left &lt; view_xview[global.myView] + view_wview[global.myView]-40)) &amp;&amp;
+    !collision_line(x,y,oHoward.x,oHoward.y,oBlock,true,false){ 
+        state = "attack";
+    }else{
+        state = "wander"
+    }
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// spritez
+if !place_empty(x,y+2){
+    spr = sHoward_run;
+}else{
+    spr = sHoward_jet;
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Shoot
+if global.gameMove{
+    if (state == "attack" &amp;&amp; state2 == "shoot") &amp;&amp; instance_exists(oHoward){
+        if !collision_line(x,y,instance_nearest(x,y,oHoward).x,instance_nearest(x,y,oHoward).y, oBlock,false,true){
+            isShooting = true;
+            
+            direction = point_direction(x,y, oHoward.x, oHoward.y);
+            max_length = distance_to_object(oHoward) + 24;
+            
+            for(i = 0; i &lt; max_length; i+=1){
+                lx = x + lengthdir_x(i, direction);
+                ly = y + lengthdir_y(i, direction);
+                if(collision_point(lx, ly, oBlock, false, true))
+                or(collision_point(lx, ly, oTarget, false, true)){
+                    break;
+                }
+            }
+            height = sin(random(1));
+            
+            // take damage          
+            with (oHoward){
+                if !shieldOn{
+                    global.hp -= .6;
+                    blend = choose(c_red,c_white);
+                }else{
+                    global.shp -= .7;
+                }
+            }
+        }else{
+            isShooting = false;
+        }
+    }else{
+        isShooting = false;
+    }
+}else{
+    isShooting = false;
+}
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Check if paused
+if global.gameMove{
+    path_speed = 2
+    image_speed = .15
+}else{
+    path_speed = 0;
+    image_speed = 0
 }
 </string>
           </argument>
@@ -139,16 +345,56 @@ if hp &lt; 400{
           <argument>
             <kind>1</kind>
             <string>/// draw
-if instance_exists(oHoward) &amp;&amp; oHoward.x &gt; x{
+if instance_exists(oHoward) &amp;&amp; ((x - xprevious) &gt; 1){
     draw_sprite_ext(spr,image_index,x,y,1,1,image_angle,image_blend,image_alpha);
 }else{
     draw_sprite_ext(spr,image_index,x,y,-1,1,image_angle,image_blend,image_alpha);
 }
 
 if global.debug{
-    draw_sprite_ext(mask_index,0,x,y,1,1,0,c_aqua,0.5);
+    //draw_sprite_ext(mask_index,0,x,y,1,1,0,c_aqua,0.5);
     draw_text(x,y-16, string(hp));
 }
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// draw laser
+if isShooting &amp;&amp; global.gameMove{
+    // pulse laser code: thanks to reddit users [FmMan3] and [oldmankc]
+    height = sin(random(1));
+    if oHoward.x &gt; x{
+        draw_set_color(c_green);
+        draw_line_width(x, y-5, lx,ly, (height * 4) + 0.1);
+        draw_set_color(c_aqua);
+        draw_line_width(x, y-5, lx,ly, (height * 1) + 0.1);
+        draw_set_color(c_white);
+        draw_line_width(x, y-5, lx,ly, (height * 1) + 0.1)
+    }else{
+        draw_set_color(c_green);
+        draw_line_width(x, y-5, lx,ly, (height * 4) + 0.1);
+        draw_set_color(c_aqua);
+        draw_line_width(x, y-5, lx,ly, (height * 1) + 0.1);
+        draw_set_color(c_white);
+        draw_line_width(x, y-5, lx,ly, (height * 1) + 0.1)
+    }
+}else{}
 </string>
           </argument>
         </arguments>

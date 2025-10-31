@@ -5,7 +5,7 @@
   <visible>-1</visible>
   <depth>0</depth>
   <persistent>0</persistent>
-  <parentName>&lt;undefined&gt;</parentName>
+  <parentName>oBlock</parentName>
   <maskName>&lt;undefined&gt;</maskName>
   <events>
     <event eventtype="0" enumb="0">
@@ -27,6 +27,80 @@
             <kind>1</kind>
             <string>/// Set random direction (H)
 dir = choose (1,-1);
+
+active = true;
+count = 0;
+maxDist = 800;
+
+inside_view = point_in_rectangle(x,y, view_xview[global.myView],view_yview[global.myView], view_xview[global.myView] + view_wview[global.myView],
+view_yview[global.myView] + view_hview[global.myView])
+
+alarm[1] = 1;
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="2" enumb="1">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// reset
+if global.gameMove{
+    if  point_in_rectangle(x,y, view_xview[global.myView] - 32,view_yview[global.myView]-16, view_xview[global.myView] + view_wview[global.myView],
+view_yview[global.myView] + view_hview[global.myView]){
+        active = true;
+        if dir == 0{
+            if place_free(x+2,y){
+                dir = 1;
+                count = 0;
+            }else if place_free(x-2,y){
+                dir = -1;
+                count = 0;
+            }
+        }
+    }
+}
+
+alarm[1] = 5
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="2" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// reset distance counter
+count = 0;
 </string>
           </argument>
         </arguments>
@@ -50,59 +124,53 @@ dir = choose (1,-1);
           <argument>
             <kind>1</kind>
             <string>/// Move platform
-if global.gameMove{
+if global.gameMove &amp;&amp; active{
     if dir == 1{
-        if place_free(x+2,y){
-            hspeed = 1;
+        if (count &lt; maxDist){ 
+            if place_free(x+2,y){
+                x += 1;
+                count += 1;
+            }else{
+                if place_free(x-2,y){
+                    dir = -1;
+                    alarm[0] = 1;
+                }else{
+                    dir = 0;
+                }
+            }
         }else{
             dir = -1;
+            alarm[0] = 1;
         }
     }else if dir == -1{
-        if place_free(x-2,y){
-            hspeed = -1;
+        if (count &lt; maxDist){
+            if place_free(x-2,y){
+                x -= 1;
+                count += 1;
+            }else{
+                if place_free(x+2,y){
+                    dir = 1;
+                    alarm[0] = 1
+                }else{
+                    dir = 0; 
+                }
+            }
         }else{
             dir = 1;
+            alarm[0] = 1;
         }
+    }
+    
+    if !point_in_rectangle(x,y, view_xview[global.myView] -32,view_yview[global.myView] - 16, view_xview[global.myView] + view_wview[global.myView],
+view_yview[global.myView] + view_hview[global.myView]){
+        active = false;
+    }else{
+        active = true;
     }
 }else{
-    hspeed = 0;
+    //x = xprevious;
+    //dir = 0;
 }
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/// Platform to Player Collison
-if global.gameMove{
-    if !place_meeting(x,y,oHoward) &amp;&amp; place_meeting(x,y-1,oHoward){
-        if (hspeed &gt; 0) &amp;&amp; place_free(x+8, y-8){
-            oHoward.x += hspeed;
-            oHoward.y += vspeed;
-        }if (hspeed &lt; 0) &amp;&amp; place_free(x-8, y-8){
-            oHoward.x += hspeed;
-            oHoward.y += vspeed;   
-        }
-    }else{
-        oHoward.x = oHoward.x;
-        oHoward.y = oHoward.y;
-    }
-}
-
 </string>
           </argument>
         </arguments>
@@ -126,29 +194,78 @@ if global.gameMove{
             <string>/// Living Collisions
 if global.gameMove{
     if place_meeting(x+2, y, oHoward) &amp;&amp; !place_meeting(x, y-2, oHoward){
-        if hspeed &gt; 0{
-            if place_free(x + 8,y){
-                oHoward.x += 1
-            }else{
-                global.hp -= 10;
-                dir = -1
+        if dir == 1{
+            if place_free(x + 8,y) &amp;&amp; place_meeting(x,y+1,oBlock){
+                with oHoward{
+                    if place_free(x+2,y){
+                        if place_meeting(x,y+1, oBlock){x += 1;}
+                    }else{
+                        global.hp -= 10;
+                        oHplat.dir = -1
+                        oHplat.alarm[0] = 1;
+                    }
+                }
             }
         }else{
             if oHoward.left {oHoward.x -= 1; oHoward.status = "run"; oHoward.spr = sHoward_run;}
         }
     }
-    if place_meeting(x-2, y, oHoward) &amp;&amp; !place_meeting(x, y-2, oHoward) {
-        if hspeed &lt; 0{
-            if place_free(x - 8,y){
-                oHoward.x -= 1
-            }else{
-                global.hp -= 10; // ow
-                dir = 1
+    else if place_meeting(x-2, y, oHoward) &amp;&amp; !place_meeting(x, y-2, oHoward){
+        if dir == -1{
+            if place_free(x - 8,y) &amp;&amp; place_meeting(x,y+1,oBlock){
+                with oHoward{
+                    if place_free(x-2,y){
+                        if place_meeting(x,y+1, oBlock){x -= 1;}
+                    }else{
+                        global.hp -= 10;
+                        oHplat.dir = 1
+                        oHplat.alarm[0] = 1;
+                    }
+                }
             }
         }else{
             if oHoward.right {oHoward.x += 1 oHoward.status = "run"; oHoward.spr = sHoward_run;}
         }
     }    
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Various collisions
+if global.gameMove{
+    // Other Horizontal Platforms
+    if place_meeting(x + 1,y,oHplat){
+        instance = instance_place(x + 1, y, oHplat);
+        move_outside_solid(180,1);
+        dir = instance.dir; 
+    }else if place_meeting(x - 1, y, oHplat){
+       instance = instance_place(x - 1, y, oHplat);
+       move_outside_solid(0,1);
+       dir = instance.dir;  
+    }
+    // Push blocks
+    if place_meeting(x + 1,y,oPush){
+        move_outside_solid(180,1); 
+    }else if place_meeting(x - 1, y, oPush){
+       move_outside_solid(0,1); 
+    }
 }
 </string>
           </argument>

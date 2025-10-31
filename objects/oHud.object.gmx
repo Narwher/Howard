@@ -8,7 +8,56 @@
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
   <events>
-    <event eventtype="8" enumb="0">
+    <event eventtype="0" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if !(os_browser == browser_not_a_browser){
+    w_mult = display_get_gui_width() / 960;
+    h_mult = display_get_gui_height() / 544;
+}else{
+    w_mult = 1;
+    h_mult = 1;
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="2" enumb="1">
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>Old draw event</string>
+          </argument>
+        </arguments>
+      </action>
       <action>
         <libid>1</libid>
         <id>524</id>
@@ -111,6 +160,11 @@ if global.gameMove{
     draw_sprite_ext(sName,0,view_xview[global.myView]+4,view_yview[global.myView]+115,2,2,image_angle,image_blend,image_alpha)
     draw_healthbar(view_xview[global.myView]+70,view_yview[global.myView]+120, view_xview[global.myView]+235, view_yview[global.myView]+132, global.hp,c_black, c_red, c_lime, 0, true, true)
 }
+
+if global.continues &gt; 0{
+    draw_sprite_ext(sIcon,0,view_xview[global.myView]+4,view_yview[global.myView]+4,.125,.125,image_angle,image_blend,image_alpha)
+    if global.continues &gt; 1 {draw_text(view_xview[global.myView]+21,view_yview[global.myView]+4,"x" + string(global.continues))}
+}
 </string>
           </argument>
         </arguments>
@@ -132,13 +186,245 @@ if global.gameMove{
           <argument>
             <kind>1</kind>
             <string>/// Debug
-if global.debug &amp;&amp; global.gameMove{
+if global.debug &amp;&amp; instance_exists(oHoward){
     draw_set_valign(fa_left);
     draw_text(view_xview[global.myView] + 24, view_yview[global.myView] + 4, oHoward.status);
     draw_text(view_xview[global.myView] + 24, view_yview[global.myView] + 20, oHoward.status_blend);
-    draw_text(view_xview[global.myView] + 24, view_yview[global.myView] + 36, (string(oHoward.jumpCount) + " / " + string(oHoward.jumpHeight)));
+    draw_text(view_xview[global.myView] + 24, view_yview[global.myView] + 36, (string(oHoward.jumpCount) + "/" + string(oHoward.jumpHeight)));
     draw_text(view_xview[global.myView] + 24, view_yview[global.myView] + 52, "obj:" + string(instance_count));
     draw_text(view_xview[global.myView] + 24, view_yview[global.myView] + 68, string(fps) + " FPS");
+    //draw_text(view_xview[global.myView] + 24, view_yview[global.myView] + 84, oHoward.myTarget);
+    //draw_text(view_xview[global.myView] + 24, view_yview[global.myView] + 84, "HSP: " + string(oHoward.hspeed));
+    //draw_text(view_xview[global.myView] + 24, view_yview[global.myView] + 100, "VSP: " + string(oHoward.vspeed));
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="3" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if global.debug{
+    if keyboard_check_pressed(ord('U')) &amp;&amp; keyboard_check(vk_control){view_wview[global.myView] += 15; view_hview[global.myView]+=10;}
+    if keyboard_check_pressed(ord('J')) &amp;&amp; keyboard_check(vk_control){view_wview[global.myView] -= 15; view_hview[global.myView]-=10;}
+}
+
+if !(os_browser == browser_not_a_browser){
+    w_mult = display_get_gui_width() / 960;
+    h_mult = display_get_gui_height() / 544;
+}else{
+    w_mult = 1;
+    h_mult = 1;
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="64">
+      <action>
+        <libid>1</libid>
+        <id>526</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>1</exetype>
+        <functionname>action_font</functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>12</kind>
+            <font>fnt_debug</font>
+          </argument>
+          <argument>
+            <kind>4</kind>
+            <string>0</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>524</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>1</exetype>
+        <functionname>action_color</functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>13</kind>
+            <string>8421504</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Draw textbox
+draw_rectangle(0,116*4*h_mult, 240*4*w_mult, 136*4*h_mult,false)
+
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>524</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>1</exetype>
+        <functionname>action_color</functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>13</kind>
+            <string>16777215</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Draw name, health and score
+if global.gameMove{
+    draw_sprite_ext(sName,0,4*4*w_mult,115*4*h_mult,8*w_mult,8*h_mult,image_angle,oHoward.image_blend,image_alpha)
+    draw_healthbar(70*4*w_mult,120*4*h_mult, 235*4*w_mult, 132*4*h_mult, global.hp,c_black, c_red, c_lime, 0, true, true)
+    
+}else{
+    draw_sprite_ext(sName,0,4*4*w_mult,115*4*h_mult,8*w_mult,8*h_mult,image_angle,image_blend,image_alpha)
+    draw_healthbar(70*4*w_mult,120*4*h_mult, 235*4*w_mult, 132*4*h_mult, global.hp,c_black, c_red, c_lime, 0, true, true)
+}
+
+if global.continues &gt; 0{
+    draw_sprite_ext(sIcon,0,4*4*w_mult,4*4*h_mult,.5*w_mult,.5*h_mult,image_angle,image_blend,image_alpha)
+    if global.continues &gt; 1 {draw_text(21*4*w_mult,4*4*h_mult,"x" + string(global.continues))}
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Debug
+if global.debug &amp;&amp; instance_exists(oHoward){
+    //draw_set_valign(fa_left);
+    draw_text(24 *2, 4*4, oHoward.status);
+    draw_text(24 *2, 20*4, oHoward.status_blend);
+    draw_text(24 *2, 36*4, (string(oHoward.jumpCount) + "/" + string(oHoward.jumpHeight)));
+    draw_text(24 *2, 52*4, "obj:" + string(instance_count));
+    draw_text(24 *2, 68*4, string(fps) + " FPS");
+    //draw_text(24, 84, oHoward.myTarget);
+    //draw_text(24, 84, "HSP: " + string(oHoward.hspeed));
+    //draw_text(24, 100, "VSP: " + string(oHoward.vspeed));
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Draw shield and air bars over Howard
+
+//draw shield bar when applicable
+if global.gameMove{
+    if oHoward.shieldOn{
+        draw_healthbar(oHoward.x-8,oHoward.playerHeight-14, oHoward.x+8, oHoward.playerHeight-10, global.shp,c_black, c_red, c_lime, 0, true, true)
+    }else{
+        // this space for rent
+    }
+    
+    //draw air bar when submerged
+    if oHoward.underWater{
+        draw_healthbar(oHoward.x-12,oHoward.y-8, oHoward.x-8, oHoward.y + 8, oHoward.air,c_black, c_blue, c_aqua, 3, true, true)
+    }else{
+        // blah
+    }
 }
 </string>
           </argument>

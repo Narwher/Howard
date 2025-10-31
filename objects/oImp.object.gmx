@@ -67,6 +67,30 @@ alarm[1] = 1; // Random direction
           </argument>
         </arguments>
       </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// X and Y origin offsets
+// distance to origin
+x_offset = 0;
+y_offset = 0;
+</string>
+          </argument>
+        </arguments>
+      </action>
     </event>
     <event eventtype="2" enumb="1">
       <action>
@@ -115,14 +139,14 @@ alarm[1] = 40;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Delayed gravity
+            <string>/// gravity
 if global.gameMove{
     if place_free(x,y+1){
         y += 2;
     }
 }
 
-alarm[0] = 2;
+alarm[0] = 1;
 </string>
           </argument>
         </arguments>
@@ -237,36 +261,6 @@ if global.gameMove{
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Player collision
-if global.gameMove{
-    if !place_meeting(x,y,oHoward) &amp;&amp; place_meeting(x,y-2,oHoward){
-        if (hspeed &gt; 0) &amp;&amp; place_free(x+4,y-8){
-            oHoward.x += hspeed;
-        }else if (hspeed &lt; 0) &amp;&amp; place_free(x-4,y-8){
-            oHoward.x += hspeed;      
-        } 
-    }  
-}
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
             <string>/// Dai
 if hp &lt;= 0 {
    score += 100;
@@ -330,6 +324,14 @@ if global.gameMove{
         x += 1;
     }
     
+    if place_meeting(x,y, oTarget) {
+        x = xprevious;
+    }
+    
+    if place_meeting(x,y+2, oTarget) {
+        y = yprevious;
+    }
+    
     if place_meeting(x,y+1,oLava){
         hp -= .15;
         image_blend = choose(c_red, c_white);
@@ -339,6 +341,62 @@ if global.gameMove{
         }
     }
 }
+
+/// Get unstuck if stuck
+if place_meeting(x,y+2,oBlock){
+    oth = instance_place(x,y+2,oBlock);
+    if bbox_bottom &lt; oth.bbox_top+12{
+        move_outside_solid(90,1);
+    }
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="4" ename="oBreak">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>myTarg = instance_place(x,y,oTarget);
+if myTarg != noone{ move_outside_solid(point_direction(myTarg.x,myTarg.y,x,y),4);}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="4" ename="oBlock">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>myBlock = instance_place(x,y,oBlock);
+if myBlock != noone{ move_outside_solid(point_direction(myBlock.x,myBlock.y,x,y),1);}
 </string>
           </argument>
         </arguments>

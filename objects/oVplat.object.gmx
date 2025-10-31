@@ -75,7 +75,7 @@ activated = true;
           <argument>
             <kind>1</kind>
             <string>activated = false;
-alarm[2] = 5;
+alarm[2] = 25;
 </string>
           </argument>
         </arguments>
@@ -122,19 +122,23 @@ alarm[2] = 5;
           <argument>
             <kind>1</kind>
             <string>/// Move plathorm
-if global.gameMove &amp;&amp; activated{
-    if dir == -1{
-        if place_free(x,y-1){
-            vspeed = -1;
-        }else{
-            dir = 1;
+if global.gameMove{
+    if activated{
+        if dir == -1{
+            if place_free(x,y-1){
+                vspeed = -1;
+            }else{
+                dir = 1;
+            }
+        }else if dir == 1{
+            if place_free(x,y+1){
+                vspeed = 1;
+            }else{
+                dir = -1;
+            }
         }
-    }else if dir == 1{
-        if place_free(x,y+1){
-            vspeed = 1;
-        }else{
-            dir = -1;
-        }
+    }else{
+        vspeed = 0;
     }
 }else{
     vspeed = 0;
@@ -166,9 +170,9 @@ if global.gameMove{
             if place_free(x,y-17){
                 if oHoward.jump{
                     alarm[1] = 1; // quickly disable vertical movement to break free
-                    oHoward.y -= 2;
+                    oHoward.y -= 8;
                 }else{
-                    oHoward.y += vspeed
+                    oHoward.y += vspeed;
                 }
             }else{
                 alarm[0] = 2;
